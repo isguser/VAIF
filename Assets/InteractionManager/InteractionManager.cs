@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine.Windows.Speech;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
@@ -72,7 +70,7 @@ public class InteractionManager : MonoBehaviour
     {
         // Need more logic
         //if (!isSpeaking && !isListening && !isWaiting && eventIndex < events.Count && start)
-        if (eventIndex < events.Count && start)
+        if (eventIndex < events.Count && start && !isWaiting)
         {
             RunGame();
         }
@@ -81,8 +79,11 @@ public class InteractionManager : MonoBehaviour
     public void RunGame()
     {
         Event e = events.ElementAt(eventIndex);
-        sm = e.agent.GetComponent<AgentStatusManager>();
-        if (sm.isInRange && sm.isLookedAt)
+        if(e.name != "Trigger")
+        {
+            sm = e.agent.GetComponent<AgentStatusManager>();
+        }
+        if ((sm.isInRange && sm.isLookedAt && !sm.isSpeaking) || e.name == "Trigger")
         {
             memories.Add(eventIndex);
             Debug.Log("Event index playing..." + eventIndex);

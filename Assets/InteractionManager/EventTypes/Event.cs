@@ -66,7 +66,7 @@ public class Event : MonoBehaviour {
                 GameObject trigger = new GameObject();
                 trigger.name = "Trigger";
                 trigger.AddComponent<Trigger>();
-                trigger.GetComponent<Trigger>().agent = agent;
+                //trigger.GetComponent<Trigger>().agent = agent;
                 trigger.GetComponent<Trigger>().eventID = eventID;
                 SetParent(trigger);
                 break;

@@ -19,7 +19,10 @@ public class AnimationManager : MonoBehaviour
         assetAnimations = Resources.LoadAll("_Animations", typeof(AnimationClip));
         foreach (AnimationClip a in assetAnimations)
         {
-            animations.Add(a);
+            if(a.name.ToLower() != "idle")
+            {
+                animations.Add(a);
+            }
         }
     }
 
@@ -32,7 +35,7 @@ public class AnimationManager : MonoBehaviour
         animate.toIdle = anim.toIdle;
         animate.animation = anim.animation;
         animate.timeout = anim.timeout;
-        Invoke("PlayAnimationDelayedTimeout", animate.delay);
+        Invoke("PlayAnimationDelayedTimeout", anim.delay);
     }
 
     public void PlayAnimationDelayedTimeout()

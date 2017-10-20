@@ -9,6 +9,7 @@ public class DialogManager : MonoBehaviour
 
     protected AudioSource source;
     protected InteractionManager interactionManager;
+    protected AgentStatusManager agentStatus;
 
     protected AudioClip currentDialog;
 
@@ -28,7 +29,10 @@ public class DialogManager : MonoBehaviour
     public void Speak(Dialog dial)
     {
         interactionManager.isSpeaking = true;
-		source.Stop();
+        agentStatus = dial.agent.GetComponent<AgentStatusManager>();
+        agentStatus.isSpeaking = true;
+
+        source.Stop();
         if (dial.audioFile != null)
         {
             currentDialog = dialogs.Find((AudioClip a) => { return a.name == dial.audioFile.name; });
@@ -54,6 +58,7 @@ public class DialogManager : MonoBehaviour
 
 	void NotSpeaking()
     {
-		interactionManager.isSpeaking = false;
+        agentStatus.isSpeaking = false;
+        interactionManager.isSpeaking = false;
 	}
 }
