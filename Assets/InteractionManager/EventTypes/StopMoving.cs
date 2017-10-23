@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class StopMoving : Event
+public class StopMoving : EventIM
 {
 
 }

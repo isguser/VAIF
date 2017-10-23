@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Event : MonoBehaviour {
+public class EventIM : MonoBehaviour {
 
     [Tooltip("Default. The EventID is how you can access different events through Jump events in the Interaction Manager. It is also" +
         "used in timeouts and parameters as jumps from other events. Generated as sequential integers by default.")]

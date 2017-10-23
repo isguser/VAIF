@@ -4,7 +4,7 @@
 /// Either way, would this work or does it also have to be mved
 /// as a corroutine to dialog manager?
 /// </summary>
-public class Wildcard : Event
+public class Wildcard : EventIM
 {
     [Tooltip("Mandatory. Jump to this ID afdter the microphone pics up any noise.")]
     public int wildcardJumpID;

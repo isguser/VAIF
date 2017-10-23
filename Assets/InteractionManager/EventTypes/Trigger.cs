@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Trigger : Event
+public class Trigger : EventIM
 {
     [Tooltip("Mandatory. Name of the script that contains the method you want to trigger as a string.")]
     public Component component;

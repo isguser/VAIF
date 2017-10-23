@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EmotionCheck : Event
+public class EmotionCheck : EventIM
 {
     //[Tooltip("Mandatory. Emotion to check.")]
     //public Emotion editEmotion;

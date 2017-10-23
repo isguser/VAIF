@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-public class Dialog : Event {
+public class Dialog : EventIM
+{
     [Tooltip("Mandatory. Audio file object you want to play in this dialog.")]
     public AudioClip audioFile;
     [Tooltip("Optional. Name of the audio file that you want to play, case sensitive.")]

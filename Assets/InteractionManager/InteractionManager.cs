@@ -39,7 +39,7 @@ public class InteractionManager : MonoBehaviour
     protected bool start = true;
 
     public List<int> memories = new List<int>();
-    public List<Event> events = new List<Event>();
+    public List<EventIM> events = new List<EventIM>();
 
     protected DialogManager dm = new DialogManager();
     protected AnimationManager am = new AnimationManager();
@@ -61,7 +61,7 @@ public class InteractionManager : MonoBehaviour
         mcm = gameObject.GetComponent<MemoryCheckManager>();
         foreach (Transform child in transform)
         {
-            events.Add(child.GetComponentInChildren<Event>());
+            events.Add(child.GetComponentInChildren<EventIM>());
         }
         start = true;
     }
@@ -78,7 +78,7 @@ public class InteractionManager : MonoBehaviour
 
     public void RunGame()
     {
-        Event e = events.ElementAt(eventIndex);
+        EventIM e = events.ElementAt(eventIndex);
         if(e.name != "Trigger")
         {
             sm = e.agent.GetComponent<AgentStatusManager>();

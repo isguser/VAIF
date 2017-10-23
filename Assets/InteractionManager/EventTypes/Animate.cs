@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Animate : Event {
+public class Animate : EventIM {
 
     [Tooltip("Mandatory. Name of the animation file you want to play, case sensitive." +
     "Animations need to be set at the AnimationManager located in the agent's parent.")]

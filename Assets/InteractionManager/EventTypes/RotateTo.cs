@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class RotateTo : Event
+public class RotateTo : EventIM
 {
     /// <summary>
     /// TODO: Update this with a proper rotation system that blends the rotating animation properly.

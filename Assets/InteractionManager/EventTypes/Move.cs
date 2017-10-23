@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Move : Event
+public class Move : EventIM
 {
     [Tooltip("Mandatory. Follow this game object's transform values. To unfollow use an unfollow event.")]
     public GameObject target;

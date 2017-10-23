@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Gaze : Event
+public class Gaze : EventIM
 {
 
     [Tooltip("Mandatory. Gaze at this game object (drag from scene hierarchy).")]

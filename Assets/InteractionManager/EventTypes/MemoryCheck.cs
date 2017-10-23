@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MemoryCheck : Event
+public class MemoryCheck : EventIM
 {
     [Tooltip("Mandatory. EventID of memory to check. Returns true if the event happened.")]
     public int [] memoriesToCheck;

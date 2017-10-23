@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(Event))]
+[CustomEditor(typeof(EventIM))]
 public class EventEditor : Editor
 {
-    protected Event.EventType eventType = new Event.EventType();
-    protected Event.EventType selected;
+    protected EventIM.EventType eventType = new EventIM.EventType();
+    protected EventIM.EventType selected;
     public override void OnInspectorGUI()
     {
         //DrawDefaultInspector();
@@ -14,11 +14,11 @@ public class EventEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("agent"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("eventID"), true);
         EditorGUILayout.LabelField("Add a new event of type: ");
-        selected = (Event.EventType)EditorGUILayout.EnumPopup(selected);
+        selected = (EventIM.EventType)EditorGUILayout.EnumPopup(selected);
 
         serializedObject.ApplyModifiedProperties();
 
-        Event eventEditor = (Event)target;
+        EventIM eventEditor = (EventIM)target;
         
         if (GUILayout.Button("Add Event"))
         {

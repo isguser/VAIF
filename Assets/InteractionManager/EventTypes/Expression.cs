@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Expression : Event
+public class Expression : EventIM
 {
     [Tooltip("Mandatory. Based on your model's blendshapes, configure this to the " +
         "blendshape index of the emotion you want top edit.")]

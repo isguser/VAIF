@@ -1,13 +1,10 @@
-﻿using System;
-using UnityEngine.Windows.Speech;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// TODO: Make a 2D array representation of this in the editor.
 /// TODO: Copy the first event ID to all other elements of the grammar starting where the ID was placed, downwards.
 /// </summary>
-public class Response : Event
+public class Response : EventIM
 {
     [Tooltip("Mandatory. Text version of all reognizable words.")]
     public string [] grammarItems;
