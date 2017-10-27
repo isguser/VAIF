@@ -41,19 +41,30 @@ public class InteractionManager : MonoBehaviour
     public List<int> memories = new List<int>();
     public List<EventIM> events = new List<EventIM>();
 
-    protected DialogManager dm = new DialogManager();
-    protected AnimationManager am = new AnimationManager();
-    protected ResponseManager rm = new ResponseManager();
-    protected WildcardManager wm = new WildcardManager();
-    protected TriggerManager tm = new TriggerManager();
-    protected WaitManager wwm = new WaitManager();
-    protected MoveManager mm = new MoveManager();
-    protected EmoteManager em = new EmoteManager();
-    protected MemoryCheckManager mcm = new MemoryCheckManager();
-    protected AgentStatusManager sm = new AgentStatusManager();
+    protected DialogManager dm;
+    protected AnimationManager am;
+    protected ResponseManager rm;
+    protected WildcardManager wm;
+    protected TriggerManager tm;
+    protected WaitManager wwm;
+    protected MoveManager mm;
+    protected EmoteManager em;
+    protected MemoryCheckManager mcm;
+    protected AgentStatusManager sm;
 
     private void Start()
     {
+        dm = new DialogManager();
+        am = new AnimationManager();
+        rm = new ResponseManager();
+        wm = new WildcardManager();
+        tm = new TriggerManager();
+        wwm = new WaitManager();
+        mm = new MoveManager();
+        em = new EmoteManager();
+        mcm = new MemoryCheckManager();
+        sm = new AgentStatusManager();
+
         rm = gameObject.GetComponent<ResponseManager>();
         wm = gameObject.GetComponent<WildcardManager>();
         tm = gameObject.GetComponent<TriggerManager>();

@@ -7,7 +7,7 @@ public class AnimationManager : MonoBehaviour
     protected Object[] assetAnimations;
 
     protected Animator animator;
-    protected Animate animate = new Animate();
+    protected Animate animate;
     protected bool startAnimation = false;
     protected float endTime;
     protected bool looping;
@@ -15,6 +15,7 @@ public class AnimationManager : MonoBehaviour
     
     private void Start()
     {
+        animate = new Animate();
         animator = gameObject.GetComponent<Animator>();
         assetAnimations = Resources.LoadAll("_Animations", typeof(AnimationClip));
         foreach (AnimationClip a in assetAnimations)

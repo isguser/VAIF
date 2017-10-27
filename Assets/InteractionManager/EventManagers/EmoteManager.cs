@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EmoteManager : MonoBehaviour
 {
@@ -29,17 +27,22 @@ public class EmoteManager : MonoBehaviour
             return;
         }
         currentBlnshapeValue = emotionalFace.GetBlendShapeWeight(bsIndex);
-        Debug.Log(emotionDisplay.emotionalValue);
         nextBlendshapeValue = emotionDisplay.emotionalValue;
         startTransition = true;
     }
     // Update is called once per frame
     void Update()
     {
-        if (currentBlnshapeValue <= nextBlendshapeValue && startTransition)
+        if (currentBlnshapeValue <= nextBlendshapeValue && startTransition && transitionBlendshapeValue <= nextBlendshapeValue)
         {
-            transitionBlendshapeValue = Mathf.Lerp(0f, nextBlendshapeValue, step * Time.deltaTime);
+            Debug.Log("Current v. Next: " + currentBlnshapeValue + " " + nextBlendshapeValue);
+            transitionBlendshapeValue++;
             emotionalFace.SetBlendShapeWeight(bsIndex, transitionBlendshapeValue);
+        }
+        else
+        {
+            startTransition = false;
+            transitionBlendshapeValue = 0;
         }
     }
 

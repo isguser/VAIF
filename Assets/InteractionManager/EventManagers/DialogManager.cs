@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class DialogManager : MonoBehaviour
 {
-    protected List <AudioClip> dialogs = new List<AudioClip>();
+    protected List <AudioClip> dialogs =  new List<AudioClip>();
     protected UnityEngine.Object[] assetDialogs;
 
     protected AudioSource source;
