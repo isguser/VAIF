@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/*
+ * TODO when we have pitch and other features
+ */
 
 public enum Personality
 {
