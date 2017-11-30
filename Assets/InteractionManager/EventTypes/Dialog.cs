@@ -11,10 +11,4 @@ public class Dialog : EventIM
     [Tooltip("Optional. When not null, this defines the event into which the character jumps if it is interrupted. " +
         "If not set, you cannot interrupt the agent during this dialog.")]
     public string bargeIn;
-
-    //Edits made by LJH Nov. 28th
-    [Tooltip("NOT IMPLEMENTED! : If checked play dialog if user is in range.")]
-    public bool inRange;
-    [Tooltip("NOT IMPLEMENTED! : If checked play dialog if user is looking at agent.")]
-    public bool lookedAt;
 }
