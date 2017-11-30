@@ -94,7 +94,6 @@ public class InteractionManager : MonoBehaviour
         {
             sm = e.agent.GetComponent<AgentStatusManager>();
         }
-        //Edit by LJH on Nov. 28th - NOT IMPLEMENTED! : Check the status of the triggerInteration then..
         if ((sm.isInRange && sm.isLookedAt && !sm.isSpeaking && !sm.isListening) || e.name == "Trigger")
         {
             memories.Add(eventIndex);
