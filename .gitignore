@@ -32,3 +32,6 @@ sysinfo.txt
 # Builds
 *.apk
 
+# CS meta files
+*.cs.meta
+
