@@ -3,19 +3,14 @@
 public class InAgentRange : MonoBehaviour
 {
     public float timeInRange;
-    protected GameObject target;
-    string tag = "AgentRange";
-
-    // Use this for initialization
-    void Start ()
-    {
-		
-	}
+    protected GameObject PlayerCollider;
+    string tagged = "Player";
 
     void OnTriggerEnter(Collider other)
     {
-        target = other.gameObject;
-        if (target.tag == tag)
+        PlayerCollider = other.gameObject;
+        Debug.Log(PlayerCollider.tag + " " + tagged);
+        if (PlayerCollider.tag == tagged)
         {
             Invoke("InCharacterRange", timeInRange);
         }
@@ -23,16 +18,16 @@ public class InAgentRange : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        target = other.gameObject;
-        if (target.tag == tag)
+        PlayerCollider = other.gameObject;
+        if (PlayerCollider.tag == tagged)
         {
-            target.GetComponentInParent<AgentStatusManager>().isInRange = false;
+            this.gameObject.GetComponentInParent<AgentStatusManager>().isInRange = false;
             CancelInvoke("InCharacterRange");
         }
     }
 
     void InCharacterRange()
     {
-        target.GetComponentInParent<AgentStatusManager>().isInRange = true;
+        this.gameObject.GetComponentInParent<AgentStatusManager>().isInRange = true;
     }
 }

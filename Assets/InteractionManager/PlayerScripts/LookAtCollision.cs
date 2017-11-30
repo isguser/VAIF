@@ -1,21 +1,15 @@
 ﻿using UnityEngine;
 
-public class LookAtCollision : MonoBehaviour {
-
+public class LookAtCollision : MonoBehaviour
+{
     public float time_on_target;
-    protected GameObject target;
-    string tag = "Agent";
+    protected GameObject camera_LookAt;
+    string tagged = "Camera_LookAt";
 
-    // Use this for initialization
-    void Start ()
-    {
-		
-	}
-	
     void OnTriggerEnter(Collider other)
     {
-        target = other.gameObject;
-        if (target.tag == tag)
+        camera_LookAt = other.gameObject;
+        if (camera_LookAt.tag == tagged)
         {
             Invoke("LookedAt", time_on_target);
         }
@@ -23,16 +17,16 @@ public class LookAtCollision : MonoBehaviour {
 
     void OnTriggerExit(Collider other)
     {
-        target = other.gameObject;
-        if (target.tag == tag)
+        camera_LookAt = other.gameObject;
+        if (camera_LookAt.tag == tagged)
         {
-            target.GetComponent<AgentStatusManager>().isLookedAt = false;
+            this.gameObject.GetComponent<AgentStatusManager>().isLookedAt = false;
             CancelInvoke("LookedAt");
         }
     }
 
     void LookedAt()
     {
-        target.GetComponent<AgentStatusManager>().isLookedAt = true;
+        this.gameObject.GetComponent<AgentStatusManager>().isLookedAt = true;
     }
 }

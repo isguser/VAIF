@@ -12,4 +12,27 @@ public enum Personality
 public class Personalities : MonoBehaviour
 {
     public Personality personality;
+    /* Analyst personality types */
+    //architect: intj
+    //logician: intp
+    //commander: entj
+    //debater: entp
+
+    /* Diplomat personality types */
+    //advocate: infj
+    //mediator: infp
+    //protagonist: enfj
+    //campaigner: enfp
+    
+    /* Sentinel personality types */
+    //logistician: istj
+    //defender: isfj
+    //executive: estj
+    //consul: esfj
+
+    /* Explorer personality types */
+    //virtuoso: istp
+    //adventurer: isfp
+    //entrepreneur: estp
+    //entertainer: esfp
 }

@@ -17,7 +17,6 @@ public class DialogManager : MonoBehaviour
     {
 		source = GetComponentInChildren<AudioSource>();
         interactionManager = FindObjectOfType<InteractionManager>();
-
         assetDialogs = Resources.LoadAll("_Dialogs", typeof(AudioClip));
 
         foreach (AudioClip a in assetDialogs)

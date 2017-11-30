@@ -8,7 +8,7 @@ using System.Linq;
  * TODO dialog memory: remembers where the player left off with the agent
  * TODO environmental memory: agents can remember what they saw or heard you do
  * TODO update the dictation to store what the player said
- * TODO permamnent memory (across scenes and sessions)
+ * TODO permamnent memory (across scenes and sessions) by implementing a save file 
  * TODO update look at system (turn gaze, then head, then body)
  * TODO controller interaction (what we allow the player to do)
  * TODO network (multiplayer & multiagent)
@@ -94,7 +94,8 @@ public class InteractionManager : MonoBehaviour
         {
             sm = e.agent.GetComponent<AgentStatusManager>();
         }
-        if ((sm.isInRange && sm.isLookedAt && !sm.isSpeaking) || e.name == "Trigger")
+        //Edit by LJH on Nov. 28th - NOT IMPLEMENTED! : Check the status of the triggerInteration then..
+        if ((sm.isInRange && sm.isLookedAt && !sm.isSpeaking && !sm.isListening) || e.name == "Trigger")
         {
             memories.Add(eventIndex);
             Debug.Log("Event index playing..." + eventIndex);

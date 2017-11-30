@@ -40,19 +40,20 @@ public class ResponseManager : MonoBehaviour
     Dictionary<string, Action> keywordDictionary = new Dictionary<string, Action>();
     List<GrammarMapper> gMapper = new List<GrammarMapper>();
     private bool respond = false;
+    public AgentStatusManager agentStatus;
     public InteractionManager interactionManager;
 
     Response response;
 
     void Start()
     {
-        interactionManager = gameObject.GetComponentInParent<InteractionManager>();
+        interactionManager = gameObject.GetComponent<InteractionManager>();
     }
-
 
     public void Respond(Response response)
     {
-        interactionManager.isListening = true;
+        agentStatus = response.agent.GetComponent<AgentStatusManager>();
+        agentStatus.isListening = true;
         this.response = response;
         Debug.Log("Respond");
         int id = 0;
@@ -62,7 +63,6 @@ public class ResponseManager : MonoBehaviour
             keywordDictionary.Add(g, () => { });
             id++;
         }
-        Debug.Log(this.response.grammarItems[0]);
         keywordRecognizer = new KeywordRecognizer(keywordDictionary.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
@@ -95,9 +95,10 @@ public class ResponseManager : MonoBehaviour
                     interactionManager.eventIndex = gMapper[i].jumpTo;
                     keywordRecognizer.Stop();
                     keywordRecognizer.Dispose();
-                    interactionManager.isListening = false;
+                    agentStatus.isListening = false;
                     keywordDictionary.Clear();
                     gMapper.Clear();
+                    this.stopKeywordRecognizer();
                     keywordAction.Invoke();
                 }
             }
