@@ -6,6 +6,15 @@ public class EventIM : MonoBehaviour {
         "used in timeouts and parameters as jumps from other events. Generated as sequential integers by default.")]
     public int eventID;
     public GameObject agent;
+    public EventSetting isInRange;
+    public EventSetting isLookedAt;
+    public enum EventSetting
+    {
+        TRUE,
+        FALSE,
+        DONTCARE //can be T/F
+    }
+    protected EventSetting eventSetting;
     public enum EventType
     {
         Dialog,
@@ -36,6 +45,7 @@ public class EventIM : MonoBehaviour {
                 dialog.AddComponent<Dialog>();
                 dialog.GetComponent<Dialog>().agent = agent;
                 dialog.GetComponent<Dialog>().eventID = eventID;
+                dialog.GetComponent<Dialog>().isInRange = isInRange;
                 SetParent(dialog);
                 break;
             case "Animation":
@@ -160,5 +170,4 @@ public class EventIM : MonoBehaviour {
         //Makes the GameObject "newParent" the parent of the GameObject.
         eventInstance.transform.parent = gameObject.transform;
     }
-
 }

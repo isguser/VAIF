@@ -11,12 +11,12 @@ public class WaitManager : MonoBehaviour {
     }
     public void Waiting(float seconds)
     {
-        interactionManager.isWaiting = true;
+        interactionManager.startWaiting();
         Invoke("StopWaiting", seconds);
     }
 
     public void StopWaiting()
     {
-        interactionManager.isWaiting = false;
+        interactionManager.stopWaiting();
     }
 }

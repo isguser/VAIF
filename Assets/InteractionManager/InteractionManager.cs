@@ -4,7 +4,7 @@ using System.Linq;
 
 /*
  * -------------------------------------------------------------------------------------------------------------------------------
- * States: dialog, animations, responses, triggers, gaze, emotions, dialog memory, environmental memory, agent memory, permamnent memory, lookat
+ * States: dialog, animations, responses, triggers, gaze, emotions, dialog memory, environmental memory, agent memory, permanent memory, lookat
  * TODO dialog memory: remembers where the player left off with the agent
  * TODO environmental memory: agents can remember what they saw or heard you do
  * TODO update the dictation to store what the player said
@@ -32,14 +32,13 @@ public class InteractionManager : MonoBehaviour
 {
     //public AnimationManager animations;
     public int eventIndex = 0;
-    public bool isSpeaking = false;
-    public bool isListening = false;
-    public bool isWaiting = false;
-    public bool isInRange = false;
     protected bool start = true;
+    protected bool matches = false;
+    protected bool isInEvent = false;
 
     public List<int> memories = new List<int>();
     public List<EventIM> events = new List<EventIM>();
+    protected EventSettingValue esv; //state comparisons to GUI
 
     protected DialogManager dm;
     protected AnimationManager am;
@@ -51,6 +50,8 @@ public class InteractionManager : MonoBehaviour
     protected EmoteManager em;
     protected MemoryCheckManager mcm;
     protected AgentStatusManager sm;
+
+    protected Queue<EventIM> q = new Queue<EventIM>();
 
     private void Start()
     {
@@ -64,24 +65,21 @@ public class InteractionManager : MonoBehaviour
         em = new EmoteManager();
         mcm = new MemoryCheckManager();
         sm = new AgentStatusManager();
+        esv = new EventSettingValue();
 
         rm = gameObject.GetComponent<ResponseManager>();
         wm = gameObject.GetComponent<WildcardManager>();
         tm = gameObject.GetComponent<TriggerManager>();
         wwm = gameObject.GetComponent<WaitManager>();
         mcm = gameObject.GetComponent<MemoryCheckManager>();
-        foreach (Transform child in transform)
-        {
+        foreach (Transform child in transform) {
             events.Add(child.GetComponentInChildren<EventIM>());
         }
         start = true;
     }
 
-    private void Update()
-    {
-        // Need more logic
-        //if (!isSpeaking && !isListening && !isWaiting && eventIndex < events.Count && start)
-        if (eventIndex < events.Count && start && !isWaiting)
+    private void Update() {
+        if (eventIndex < events.Count && start && !sm.isWaiting )
         {
             RunGame();
         }
@@ -89,57 +87,122 @@ public class InteractionManager : MonoBehaviour
 
     public void RunGame()
     {
-        EventIM e = events.ElementAt(eventIndex);
-        if(e.name != "Trigger")
-        {
+        EventIM e = events.ElementAt(eventIndex); //get curr event
+        if ( e.name != "Trigger") {
             sm = e.agent.GetComponent<AgentStatusManager>();
         }
-        if ((sm.isInRange && sm.isLookedAt && !sm.isSpeaking && !sm.isListening) || e.name == "Trigger")
+        matches = getState(e);
+        Debug.Log(matches);
+        if ( matches )
+            isInEvent = true;
+        else
+            isInEvent = false;
+        if ( matches || e.name == "Trigger" )
         {
             memories.Add(eventIndex);
             Debug.Log("Event index playing..." + eventIndex);
             switch (e.name)
             {
+                //TODO fix the 'done' to each eventtype
                 case "Dialog":
                     dm = e.agent.GetComponent<DialogManager>();
                     dm.Speak(e.GetComponent<Dialog>());
+                    done();
                     break;
-                case "Animation":
+                case "Animation":  //Animation needs to be fixed.. dialog will not play if 105 conditions not met but animation will play..
                     am = e.agent.GetComponent<AnimationManager>();
                     am.PlayAnimation(e.GetComponent<Animate>());
+                    done();
                     break;
                 case "Response":
+                    if (wm.isRunning())
+                        wm.stop();
                     rm.Respond(e.GetComponent<Response>());
+                    done();
                     break;
                 case "Jump":
+                    //TODO jump across events
                     eventIndex = e.GetComponent<Jump>().jumpID - 1;
+                    done();
                     break;
                 case "Wildcard":
+                    if (rm.isRunning())
+                        rm.stop();
                     wm.Wildcard(e.GetComponent<Wildcard>());
+                    done();
                     break;
                 case "Trigger":
                     tm.Trigger(e.GetComponent<Trigger>());
+                    done();
                     break;
                 case "Wait":
                     wwm.Waiting(e.GetComponent<Wait>().waitTime);
+                    done();
                     break;
                 case "Move":
                     mm = e.agent.GetComponent<MoveManager>();
                     mm.StartMoving(e.GetComponent<Move>());
+                    done();
                     break;
                 case "StopMoving":
                     mm = e.agent.GetComponent<MoveManager>();
                     mm.Stop();
+                    done();
                     break;
                 case "Emote":
                     em = e.agent.GetComponent<EmoteManager>();
                     em.EmotionBlendshape(e.GetComponent<Emote>());
+                    done();
                     break;
                 case "MemoryCheck":
                     mcm.CheckMemories(e.GetComponent<MemoryCheck>());
+                    done();
                     break;
             }
             eventIndex++;
         }
+    }
+
+    public void startListening()
+    {
+        sm.isListening = true;
+    }
+    public void stopListening()
+    {
+        sm.isListening = false;
+    }
+    public void startWaiting()
+    {
+        sm.isWaiting = true;
+    }
+    public void stopWaiting()
+    {
+        sm.isWaiting = false;
+    }
+    public void startSpeaking()
+    {
+        sm.isSpeaking = true;
+    }
+    public void stopSpeaking()
+    {
+        sm.isSpeaking = false;
+    }
+
+    private void setupESV(EventIM e) {
+        //grabbing from UNITY
+        esv.setValues(e.isInRange, e.isLookedAt, sm.isSpeaking, sm.isListening);
+    }
+    private bool getState(EventIM e) {
+        setupESV(e);
+        //gets the current isInRange and isLookedAt state
+        bool[] b = new bool[2];
+        b[0] = sm.isInRange;
+        b[1] = sm.isLookedAt;
+        return esv.checkStateMatch(b);
+    }
+    private void done()
+    {
+        isInEvent = false;
+        esv.reset();
     }
 }

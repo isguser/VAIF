@@ -27,9 +27,7 @@ public class DialogManager : MonoBehaviour
 
     public void Speak(Dialog dial)
     {
-        interactionManager.isSpeaking = true;
-        agentStatus = dial.agent.GetComponent<AgentStatusManager>();
-        agentStatus.isSpeaking = true;
+        interactionManager.startSpeaking();
 
         source.Stop();
         if (dial.audioFile != null)
@@ -55,9 +53,8 @@ public class DialogManager : MonoBehaviour
 		}
 	}
 
-	void NotSpeaking()
+    void NotSpeaking()
     {
-        agentStatus.isSpeaking = false;
-        interactionManager.isSpeaking = false;
-	}
+        interactionManager.stopSpeaking();
+    }
 }

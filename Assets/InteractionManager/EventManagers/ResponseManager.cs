@@ -106,6 +106,7 @@ public class ResponseManager : MonoBehaviour
     }
 
     //where and when do we call this
+    //idk i'm calling it IM
     public void stopKeywordRecognizer()
     {
         PhraseRecognitionSystem.Shutdown();
@@ -114,6 +115,18 @@ public class ResponseManager : MonoBehaviour
             keywordRecognizer.Stop();
             keywordRecognizer.Dispose();
         }
+    }
+
+    public bool isRunning()
+    {
+        if (keywordRecognizer!=null)
+            return keywordRecognizer.IsRunning;
+        return false;
+    }
+
+    public void stop()
+    {
+        keywordRecognizer.Stop();
     }
 }
 

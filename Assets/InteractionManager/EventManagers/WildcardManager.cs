@@ -40,6 +40,14 @@ public class WildcardManager : MonoBehaviour {
         interactionManager.eventIndex = wild.wildcardJumpID;
         dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
         dictationRecognizer.Dispose();
-        interactionManager.isListening = false;
+        interactionManager.stopListening(); //isListening = false;
+    }
+
+    public bool isRunning() {
+        return (dictationRecognizer.Status == SpeechSystemStatus.Running);
+    }
+
+    public void stop() {
+        dictationRecognizer.Stop();
     }
 }
