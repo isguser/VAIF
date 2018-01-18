@@ -3,3 +3,7 @@ The Virtual Reality Agent Interaction Network (VRAIN) is a Unity package that al
 
 ## TODO
 The following is a list of tasks to-do or that are currently in the process of development:
+1. JumpManager
+-- adding 'jumps' between Events
+2. NetworkManager
+-- multiplayer support
