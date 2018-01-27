@@ -3,8 +3,10 @@
 public class EventIM : MonoBehaviour {
 
     [Tooltip("Default. The EventID is how you can access different events through Jump events in the Interaction Manager. It is also" +
-        "used in timeouts and parameters as jumps from other events. Generated as sequential integers by default.")]
-    public int eventID;
+        "used in timeouts and parameters as jumps from other events.")]
+    public GameObject eventID;
+    [Tooltip("Optional. The IDescription is how you can describe your events with a simple description ID. EX: Dialog1")]
+    public string IDescription;
     public GameObject agent;
     public EventSetting isInRange;
     public EventSetting isLookedAt;
@@ -33,6 +35,8 @@ public class EventIM : MonoBehaviour {
         StopMoving
     }
     protected EventType eventType;
+    public bool started = false;
+    public bool isDone = false;
 
     public void AddEvent(string type)
     {
@@ -161,7 +165,6 @@ public class EventIM : MonoBehaviour {
                 SetParent(stopMoving);
                 break;
         }
-        eventID++;
     }
 
     //Invoked when a new event is created.

@@ -9,7 +9,7 @@ public class InAgentRange : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         PlayerCollider = other.gameObject;
-        Debug.Log(PlayerCollider.tag + " " + tagged);
+        //Debug.Log(PlayerCollider.tag + " " + tagged);
         if (PlayerCollider.tag == tagged)
         {
             Invoke("InCharacterRange", timeInRange);

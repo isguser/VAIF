@@ -31,12 +31,15 @@ using System.Linq;
 public class InteractionManager : MonoBehaviour
 {
     //public AnimationManager animations;
-    public int eventIndex = 0;
+    public GameObject eventIndex;
+    public AgentStatusManager[] agents;
+    protected int eventID; //Internal ID
     protected bool start = true;
     protected bool matches = false;
     protected bool isInEvent = false;
+    protected bool speaking = false; //Used to check if any agent is speaking
 
-    public List<int> memories = new List<int>();
+    public List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
     protected EventSettingValue esv; //state comparisons to GUI
 
@@ -50,8 +53,10 @@ public class InteractionManager : MonoBehaviour
     protected EmoteManager em;
     protected MemoryCheckManager mcm;
     protected AgentStatusManager sm;
+    protected JumpManager jm;
 
-    protected Queue<EventIM> q = new Queue<EventIM>();
+    //work in progress... please show love
+    protected ConversationManager cm;
 
     private void Start()
     {
@@ -67,19 +72,25 @@ public class InteractionManager : MonoBehaviour
         sm = new AgentStatusManager();
         esv = new EventSettingValue();
 
+        //work in progress
+        cm = new ConversationManager();
+
         rm = gameObject.GetComponent<ResponseManager>();
         wm = gameObject.GetComponent<WildcardManager>();
         tm = gameObject.GetComponent<TriggerManager>();
         wwm = gameObject.GetComponent<WaitManager>();
         mcm = gameObject.GetComponent<MemoryCheckManager>();
+        cm = gameObject.GetComponent<ConversationManager>();
         foreach (Transform child in transform) {
             events.Add(child.GetComponentInChildren<EventIM>());
         }
+
+        jm = new JumpManager(events.Count);
         start = true;
     }
 
     private void Update() {
-        if (eventIndex < events.Count && start && !sm.isWaiting )
+        if (eventID < events.Count && start && !sm.isWaiting )
         {
             RunGame();
         }
@@ -87,79 +98,76 @@ public class InteractionManager : MonoBehaviour
 
     public void RunGame()
     {
-        EventIM e = events.ElementAt(eventIndex); //get curr event
+        EventIM e = events.ElementAt(eventID); //get curr event
+        if ( e.started && !e.isDone ) //waiting
+            return;
         if ( e.name != "Trigger") {
             sm = e.agent.GetComponent<AgentStatusManager>();
         }
         matches = getState(e);
-        Debug.Log(matches);
-        if ( matches )
-            isInEvent = true;
-        else
-            isInEvent = false;
-        if ( matches || e.name == "Trigger" )
+        speaking = getSpeakingState();
+        if ( (matches || e.name == "Trigger") && !speaking)
         {
             memories.Add(eventIndex);
-            Debug.Log("Event index playing..." + eventIndex);
+            Debug.Log("Event index playing..." + eventIndex.name + " Speaking: " + e.agent.name);
             switch (e.name)
             {
-                //TODO fix the 'done' to each eventtype
                 case "Dialog":
                     dm = e.agent.GetComponent<DialogManager>();
-                    dm.Speak(e.GetComponent<Dialog>());
-                    done();
+                    dm.Speak(e.GetComponent<Dialog>(), sm);
                     break;
                 case "Animation":  //Animation needs to be fixed.. dialog will not play if 105 conditions not met but animation will play..
                     am = e.agent.GetComponent<AnimationManager>();
                     am.PlayAnimation(e.GetComponent<Animate>());
-                    done();
+                    //done();
                     break;
                 case "Response":
                     if (wm.isRunning())
                         wm.stop();
                     rm.Respond(e.GetComponent<Response>());
-                    done();
+                    //done();
                     break;
                 case "Jump":
-                    //TODO jump across events
-                    eventIndex = e.GetComponent<Jump>().jumpID - 1;
-                    done();
+                    //TODO get JumpToIDs from GUI (GameObject)
+                    eventIndex = e.GetComponent<Jump>().jumpTo;
+                    //done();
                     break;
                 case "Wildcard":
                     if (rm.isRunning())
                         rm.stop();
                     wm.Wildcard(e.GetComponent<Wildcard>());
-                    done();
+                    //done();
                     break;
                 case "Trigger":
                     tm.Trigger(e.GetComponent<Trigger>());
-                    done();
+                    //done();
                     break;
                 case "Wait":
-                    wwm.Waiting(e.GetComponent<Wait>().waitTime);
-                    done();
+                    wwm.Waiting(e.GetComponent<Wait>());
+                    //done();
                     break;
                 case "Move":
                     mm = e.agent.GetComponent<MoveManager>();
                     mm.StartMoving(e.GetComponent<Move>());
-                    done();
+                    //done();
                     break;
                 case "StopMoving":
                     mm = e.agent.GetComponent<MoveManager>();
                     mm.Stop();
-                    done();
+                    //done();
                     break;
                 case "Emote":
                     em = e.agent.GetComponent<EmoteManager>();
                     em.EmotionBlendshape(e.GetComponent<Emote>());
-                    done();
+                   //done();
                     break;
                 case "MemoryCheck":
                     mcm.CheckMemories(e.GetComponent<MemoryCheck>());
-                    done();
+                    //done();
                     break;
             }
-            eventIndex++;
+            done();
+            eventID++;
         }
     }
 
@@ -183,9 +191,20 @@ public class InteractionManager : MonoBehaviour
     {
         sm.isSpeaking = true;
     }
-    public void stopSpeaking()
+    public void stopSpeaking(AgentStatusManager curAgent)
     {
-        sm.isSpeaking = false;
+        //Debug.Log(sm.name + " talking to false but " + curAgent.name + " was talking.");
+        if (curAgent.name == sm.name)
+        {
+            Debug.Log(sm.name + " speaking: FALSE");
+            sm.isSpeaking = false;
+        }
+        else
+        {
+            Debug.Log("Type Mismatch: " + curAgent.name + " != " + sm.name + 
+                " Set " + curAgent.name + " speaking: FALSE");
+            curAgent.isSpeaking = false;
+        }
     }
 
     private void setupESV(EventIM e) {
@@ -200,9 +219,26 @@ public class InteractionManager : MonoBehaviour
         b[1] = sm.isLookedAt;
         return esv.checkStateMatch(b);
     }
+
+    private bool getSpeakingState()
+    {
+        foreach (AgentStatusManager A in agents)
+        {
+            if (A.isSpeaking)
+            {
+                //Debug.Log(A.name + " is speaking.");
+                return true;
+            }
+        }
+        //Debug.Log("Nobody is speaking.");
+        return false;
+       
+    }
     private void done()
     {
+        Debug.Log("Finished Event!");
         isInEvent = false;
+        speaking = false;
         esv.reset();
     }
 }

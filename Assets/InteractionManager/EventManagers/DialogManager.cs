@@ -12,6 +12,7 @@ public class DialogManager : MonoBehaviour
     protected AgentStatusManager agentStatus;
 
     protected AudioClip currentDialog;
+    private Dialog d;
 
     void Start ()
     {
@@ -25,10 +26,12 @@ public class DialogManager : MonoBehaviour
         }
     }
 
-    public void Speak(Dialog dial)
+    public void Speak(Dialog dial, AgentStatusManager curAgent)
     {
         interactionManager.startSpeaking();
-
+        agentStatus = curAgent;
+        d = dial;
+        d.started = true;
         source.Stop();
         if (dial.audioFile != null)
         {
@@ -55,6 +58,8 @@ public class DialogManager : MonoBehaviour
 
     void NotSpeaking()
     {
-        interactionManager.stopSpeaking();
+        Debug.Log("NotSpeaking Invoked!");
+        interactionManager.stopSpeaking(agentStatus);
+        d.isDone = true;
     }
 }

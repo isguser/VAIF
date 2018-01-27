@@ -6,6 +6,15 @@ public class MemoryCheckManager : MonoBehaviour {
     protected bool currentMemories = true;
     protected MemoryCheck memories;
 
+    /**********************************************************
+    IF YOU CAN NOT MESS WITH THIS THAT WOULD BE AWESOME
+        only add what is NEEDED for 'visited this convo already'
+        behaviors
+    @misha is stealing for a class project: how to use mems in
+        convos
+    thank you :)
+    ***********************************************************/
+
     // Use this for initialization
     void Start ()
     {
@@ -14,6 +23,7 @@ public class MemoryCheckManager : MonoBehaviour {
 
     public void CheckMemories(MemoryCheck memories)
     {
+        memories.started = true;
         this.memories = memories;
         if(CheckMemory(memories))
         {
@@ -27,21 +37,25 @@ public class MemoryCheckManager : MonoBehaviour {
 
     bool CheckMemory(MemoryCheck memories)
     {
-        foreach(int m in memories.memoriesToCheck)
+        foreach(GameObject m in memories.memoriesToCheck)
         {
             Debug.Log("MEMORY CHECK: " + m);
             if (!interactionManager.memories.Contains(m))
             {
                 Debug.Log("Memory " + m + " not found");
+                memories.isDone = true;
                 return false;
             }
         }
+        memories.isDone = true;
         return true;
     }
 
-    void MemoryJump(int jumpID)
+    void MemoryJump(GameObject jumpID)
     {
-        Debug.Log("Jump to: " + (jumpID - 1) );
-        interactionManager.eventIndex = jumpID-1;
+        //TOFIX? Not a proper description... Will only display: Jump to: Animation
+        Debug.Log("Jump to: " + (jumpID.name) );
+        interactionManager.eventIndex = jumpID;
+        //TODO grab JM and go from there
     }
 }

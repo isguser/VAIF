@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class GrammarMapper : IEquatable<GrammarMapper>
 {
     public string item { get; set; }
-    public int jumpTo { get; set; }
+    public GameObject jumpTo { get; set; }
 
     public override string ToString()
     {
@@ -50,19 +50,13 @@ public class ResponseManager : MonoBehaviour
         interactionManager = gameObject.GetComponent<InteractionManager>();
     }
 
-    public void Respond(Response response)
-    {
+    public void Respond(Response r) {
+        response = r;
         agentStatus = response.agent.GetComponent<AgentStatusManager>();
         agentStatus.isListening = true;
-        this.response = response;
+        response.started = true;
         Debug.Log("Respond");
-        int id = 0;
-        foreach (string g in this.response.grammarItems)
-        {
-            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
-            keywordDictionary.Add(g, () => { });
-            id++;
-        }
+        addResponses();
         keywordRecognizer = new KeywordRecognizer(keywordDictionary.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
@@ -70,6 +64,53 @@ public class ResponseManager : MonoBehaviour
         if (this.response.timeout > 0)
         {
             Invoke("ResponseTimeout", this.response.timeout);
+        }
+    }
+    private void addResponses() {
+        //untested --moved from line 58
+        int id = 0;
+        foreach (string g in this.response.grammarItems)
+        {
+            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            keywordDictionary.Add(g, () => { });
+            if ( g.Equals("yes",StringComparison.InvariantCultureIgnoreCase) )
+                addAffirmations(id); //TESTME
+            else if ( g.Equals("no", StringComparison.InvariantCultureIgnoreCase) )
+                addNegatives(id); //TESTME
+            else if ( g.Equals("i don't know",StringComparison.InvariantCultureIgnoreCase) )
+                addUnsures(id); //TESTME
+            id++;
+        }
+        //addRepeat(); //TESTME
+    }
+    private void addRepeat() {
+        String[] resp = {"can you repeat that","what","what did you say","huh","can you repeat that"};
+        int id = 1;
+        foreach (string g in resp) {
+            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id-1] });
+            keywordDictionary.Add(g, () => { });
+            id++;
+        }
+    }
+    private void addAffirmations(int id) {
+        String[] aff = {"yeah", "yup", "yep", "okay", "that's okay", "sure", "sounds good"};
+        foreach (string g in aff) {
+            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            keywordDictionary.Add(g, () => { });
+        }
+    }
+    private void addNegatives(int id) {
+        String[] aff = {"nah","nope","no way","no, thank you"};
+        foreach (string g in aff) {
+            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            keywordDictionary.Add(g, () => { });
+        }
+    }
+    private void addUnsures(int id) {
+        String[] aff = {"i dunno","i'm unsure","i'm not sure","maybe","i guess"};
+        foreach (string g in aff) {
+            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            keywordDictionary.Add(g, () => { });
         }
     }
 
@@ -89,7 +130,7 @@ public class ResponseManager : MonoBehaviour
             //foreach (GrammarMapper gm in gMapper) { Debug.Log(gm.ToString()); }
             for (int i = 0; i < gMapper.Count; i++)
             {
-                if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = 0 }))
+                if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = null }))
                 {
                     Debug.Log("Response jump to: " + gMapper[i].jumpTo);
                     interactionManager.eventIndex = gMapper[i].jumpTo;
@@ -103,10 +144,9 @@ public class ResponseManager : MonoBehaviour
                 }
             }
         }
+        response.isDone = true;
     }
 
-    //where and when do we call this
-    //idk i'm calling it IM
     public void stopKeywordRecognizer()
     {
         PhraseRecognitionSystem.Shutdown();

@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class JumpManager : MonoBehaviour {
-    public bool[] Event;
     public GameObject[] trigger;
+    public int[] jumpToEvent;
 
-	// Use this for initialization
-	void Start () {
+    public JumpManager(int size) {
+        trigger = new GameObject[size]; //??
+        jumpToEvent = new int[size];
+        init();
+    }
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private void init() {
+        //each event jumps to next event by default
+        foreach ( int i in jumpToEvent )
+            jumpToEvent[i] = i+1;
+    }
 
-    public JumpManager(int size)
-    {
-        Event = new bool[size];
-        trigger = new GameObject[size];
+    public void grabJumps() {
+        //TODO get from GUI
+        //set Jump instance to started -- needed?
     }
 }

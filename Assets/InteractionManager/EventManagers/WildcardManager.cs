@@ -16,6 +16,7 @@ public class WildcardManager : MonoBehaviour {
     public void Wildcard(Wildcard wildcard)
     {
         wild = wildcard;
+        wild.started = true;
         Debug.Log("Recognizing wildcard...");
         dictationRecognizer = new DictationRecognizer();
 
@@ -31,6 +32,7 @@ public class WildcardManager : MonoBehaviour {
                 Debug.Log("Dictation result: " + text + " @confidence= " + confidence);
             }
         };
+        wild.isDone = true;
     }
 
     private void DictationRecognizer_DictationComplete(DictationCompletionCause cause)

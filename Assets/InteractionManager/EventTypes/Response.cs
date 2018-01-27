@@ -9,14 +9,14 @@ public class Response : EventIM
     [Tooltip("Mandatory. Text version of all reognizable words.")]
     public string [] grammarItems;
     [Tooltip("Mandatory. Event ID's as integers to match each grammar item to its consequence.")]
-    public int [] jumpIDs;
+    public GameObject [] jumpIDs;
     [Tooltip("Optional. How long until the character stops listening.")]
     public float timeout;
     [Tooltip("Optional. Jump point if a timeout case occurs.")]
-    public int timeoutJumpID;
+    public GameObject timeoutJumpID;
     [Tooltip("Optional. Counter of missrecognized input. After these many missrecognitions" +
         "the system will jump to the base case jump ID.")]
-    public int missrecognitions;
+    public GameObject missrecognitions;
     [Tooltip("Optional. Jump point after a specified set of missrecogntions.")]
     public string baseCaseJumpID;
 }

@@ -35,3 +35,5 @@ sysinfo.txt
 # Remove cs.meta files
 *.cs.meta
 
+# Other meta files
+*.meta

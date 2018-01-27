@@ -45,15 +45,23 @@ public class EventSettingValue : MonoBehaviour {
           * isLookedAt
           * isInRange
           */
-        debugMe(have);
-        if ( have.Length!=want.Length ) return false; //mismatched sizes
-        if ( talkingOrListening() ) return false; //agent is talk-/listen-ing
-        Debug.Log("i'm mr. meeseeks, look at me");
+        //debugMe(have);
+        if (have.Length != want.Length)
+        {
+            return false; //mismatched sizes
+        }
+        if (talkingOrListening())
+        {
+            return false; //agent is talk-/listen-ing
+        }
         for (int i = 0; i < dontcare.Length; i++)
-            if ( dontcare[i] ) //if we don't care if T/F, skip it
+            if (dontcare[i]) //if we don't care if T/F, skip it
                 continue;
             else
-                if (want[i] != have[i]) return false; //if state doesn't match, return false
+                if (want[i] != have[i])
+                {
+                    return false; //if state doesn't match, return false
+                }
         return true;
     }
 
@@ -68,13 +76,13 @@ public class EventSettingValue : MonoBehaviour {
         //This code is for testing purposes only
         for (int i = 0; i < want.Length; i++)
         {
-            Debug.Log("Dontcare isInRange=" + dontcare[i]);
-            Debug.Log("Dontcare isLookedAt=" + dontcare[i]);
-            Debug.Log("Want isInRange=" + want[i]);
-            Debug.Log("Have isLookedAt=" + have[i]);
+            Debug.Log("Dontcare isInRange=" + dontcare[i] + 
+                "\nDontcare isLookedAt=" + dontcare[i] +
+                "\nWant isInRange=" + want[i] +
+                "\nHave isLookedAt=" + have[i]);
         }
-        Debug.Log("isSpeaking: " + doingVerbals[0]);
-        Debug.Log("isListening: " + doingVerbals[1]);
+        Debug.Log("isSpeaking: " + doingVerbals[0] +
+                "\nisListening: " + doingVerbals[1]);
     }
 
     public void reset()

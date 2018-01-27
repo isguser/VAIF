@@ -37,6 +37,7 @@ public class AnimationManager : MonoBehaviour
         animate.animation = anim.animation;
         animate.timeout = anim.timeout;
         Invoke("PlayAnimationDelayedTimeout", anim.delay);
+        anim.started = true;
     }
 
     public void PlayAnimationDelayedTimeout()
@@ -99,5 +100,6 @@ public class AnimationManager : MonoBehaviour
 	public void ToIdle()
     {
         animator.SetInteger("pathIndex", -1);
+        animate.isDone = true;
 	}
 }
