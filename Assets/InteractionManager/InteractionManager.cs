@@ -106,10 +106,12 @@ public class InteractionManager : MonoBehaviour
         }
         matches = getState(e);
         speaking = getSpeakingState();
-        if ( (matches || e.name == "Trigger") && !speaking)
+        if ( (matches && !speaking)|| e.name == "Trigger" )
         {
+            if (cm.activateConversations)
+                cm.checkConversations(e);
             memories.Add(eventIndex);
-            Debug.Log("Event index playing..." + eventIndex.name + " Speaking: " + e.agent.name);
+            Debug.Log("Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.agent.GetInstanceID());
             switch (e.name)
             {
                 case "Dialog":
@@ -196,13 +198,13 @@ public class InteractionManager : MonoBehaviour
         //Debug.Log(sm.name + " talking to false but " + curAgent.name + " was talking.");
         if (curAgent.name == sm.name)
         {
-            Debug.Log(sm.name + " speaking: FALSE");
+            //Debug.Log(sm.name + " speaking: FALSE");
             sm.isSpeaking = false;
         }
         else
         {
-            Debug.Log("Type Mismatch: " + curAgent.name + " != " + sm.name + 
-                " Set " + curAgent.name + " speaking: FALSE");
+            //Debug.Log("Type Mismatch: " + curAgent.name + " != " + sm.name + 
+               // " Set " + curAgent.name + " speaking: FALSE");
             curAgent.isSpeaking = false;
         }
     }
@@ -236,7 +238,7 @@ public class InteractionManager : MonoBehaviour
     }
     private void done()
     {
-        Debug.Log("Finished Event!");
+        //Debug.Log("Finished Event!");
         isInEvent = false;
         speaking = false;
         esv.reset();

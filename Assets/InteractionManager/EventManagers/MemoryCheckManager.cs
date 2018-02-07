@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class MemoryCheckManager : MonoBehaviour {
 
     protected InteractionManager interactionManager;
     protected bool currentMemories = true;
-    protected MemoryCheck memories;
+    protected MemoryCheck memories; 
 
     /**********************************************************
     IF YOU CAN NOT MESS WITH THIS THAT WOULD BE AWESOME

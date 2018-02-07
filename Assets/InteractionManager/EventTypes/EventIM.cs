@@ -9,7 +9,7 @@ public class EventIM : MonoBehaviour {
     public string IDescription;
     public GameObject agent;
     public EventSetting isInRange;
-    public EventSetting isLookedAt;
+    public EventSetting isLookedAt; 
     public enum EventSetting
     {
         TRUE,

@@ -46,7 +46,7 @@ public class DialogManager : MonoBehaviour
         {
 			source.clip = currentDialog;
 			source.Play();
-			Debug.Log("Dialog: " + currentDialog.name + " with length: " + source.clip.length);
+			//Debug.Log("Dialog: " + currentDialog.name + " with length: " + source.clip.length);
 			Invoke("NotSpeaking", source.clip.length);
 		}
 
@@ -58,7 +58,7 @@ public class DialogManager : MonoBehaviour
 
     void NotSpeaking()
     {
-        Debug.Log("NotSpeaking Invoked!");
+        //Debug.Log("NotSpeaking Invoked!");
         interactionManager.stopSpeaking(agentStatus);
         d.isDone = true;
     }

@@ -53,7 +53,7 @@ public class AnimationManager : MonoBehaviour
     {
         if (startAnimation)
         {
-            Debug.Log("Playing animation: " + animate.animation);
+            //Debug.Log("Playing animation: " + animate.animation);
             int index = findAnimation(animate.animation);
             if (looping)
             {
