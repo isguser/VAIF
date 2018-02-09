@@ -1,63 +1,22 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Conversation : EventIM
 {
-    public bool start;
-    public bool finish;
-    public GameObject[] conversationEvent; //The amount of events in this instance of conversation
+    public bool conversationStart;
+    public bool conversationFinish;
     /**
      * Future implementation: Track if the user left mid-conversation and where. 
      * protected bool startedButNotFinished;
-     * protected GameObject whereWeLeftOff;
+     * protected GameObject whereWeLeftOff; //This cannot be a response/wildcard event
      **/
-    public string convoTag;
-    public int tagLocation = 0;
+    public List<EventIM> events;
 
-    public void startConversation()
+    private void Start()
     {
-        Debug.Log("Conversation " + convoTag + " started!");
-        start = true;
-    }
-
-    public void finishConversation(EventIM curEvent)
-    {
-        Debug.Log("     Length : " + conversationEvent.Length + "     " + conversationEvent[conversationEvent.Length - 1].GetInstanceID() + " : " + curEvent.gameObject.GetInstanceID());
-        if (conversationEvent[conversationEvent.Length - 1].GetInstanceID()== curEvent.gameObject.GetInstanceID())   
+        foreach (Transform child in transform)
         {
-            Debug.Log("         Conversation " + convoTag + " finished!");
-            finish = true;
+            events.Add(child.GetComponentInChildren<EventIM>());
         }
     }
-
-    public void restartConversation()
-    {
-        start = false;
-    }
-
-    public void getEvents()
-    {
-        conversationEvent = GameObject.FindGameObjectsWithTag(convoTag);
-        //Debug.Log("Conversation " + convoTag + " w/ Length " + conversationEvent.Length);
-    }
-    public void setTag(string curTag)
-    {
-        convoTag = curTag;
-        //Debug.Log(curTag + " set " + convoTag);
-    }
-
-    public bool checkTag(string curTag)
-    {
-        if (convoTag == curTag)
-            return true;
-        return false;
-    }
-
-    public void displayEventIDInstances()
-    {
-        foreach (GameObject c in conversationEvent)
-        {
-            Debug.Log("                         Event " + c.tag + " ID: " + c.GetInstanceID());
-        }
-    }
-
 }

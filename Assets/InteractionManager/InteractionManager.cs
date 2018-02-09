@@ -31,7 +31,7 @@ using System.Linq;
 public class InteractionManager : MonoBehaviour
 {
     //public AnimationManager animations;
-    public GameObject eventIndex;
+    public GameObject eventIndex; //Used for jumps
     public AgentStatusManager[] agents;
     protected int eventID; //Internal ID
     protected bool start = true;
@@ -108,10 +108,10 @@ public class InteractionManager : MonoBehaviour
         speaking = getSpeakingState();
         if ( (matches && !speaking)|| e.name == "Trigger" )
         {
-            if (cm.activateConversations)
-                cm.checkConversations(e);
+            //if (cm.activateConversations)
+                //cm.checkConversations(e);
             memories.Add(eventIndex);
-            Debug.Log("Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.agent.GetInstanceID());
+            Debug.Log("Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.GetInstanceID());
             switch (e.name)
             {
                 case "Dialog":

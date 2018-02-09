@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 
 public class EventIM : MonoBehaviour {
-
     [Tooltip("Default. The EventID is how you can access different events through Jump events in the Interaction Manager. It is also" +
         "used in timeouts and parameters as jumps from other events.")]
     public GameObject eventID;
     [Tooltip("Optional. The IDescription is how you can describe your events with a simple description ID. EX: Dialog1")]
     public string IDescription;
+    public string conversationName;
     public GameObject agent;
     public EventSetting isInRange;
-    public EventSetting isLookedAt; 
+    public EventSetting isLookedAt;
+
     public enum EventSetting
     {
         TRUE,
@@ -32,7 +33,8 @@ public class EventIM : MonoBehaviour {
         EmotionCheck,
         MemoryCheck,
         Move,
-        StopMoving
+        StopMoving,
+        AddConversation
     }
     protected EventType eventType;
     public bool started = false;
@@ -163,6 +165,14 @@ public class EventIM : MonoBehaviour {
                 stopMoving.GetComponent<StopMoving>().agent = agent;
                 stopMoving.GetComponent<StopMoving>().eventID = eventID;
                 SetParent(stopMoving);
+                break;
+            case "AddConversation":
+                GameObject conversation = new GameObject();
+                conversation.name = conversationName;
+                conversation.AddComponent<EventIM>();
+                conversation.AddComponent<Conversation>();
+                SetParent(conversation);
+                //Add conversation to the conversationManager.conversations
                 break;
         }
     }
