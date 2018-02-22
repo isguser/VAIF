@@ -171,9 +171,8 @@ public class EventIM : MonoBehaviour {
                 conversation.name = conversationName;
                 conversation.AddComponent<EventIM>();
                 conversation.AddComponent<Conversation>();
+                conversation.GetComponent<Conversation>().agent = agent;
                 SetParent(conversation);
-                //Add conversation to the conversationManager.conversations
-
                 break;
         }
     }

@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class Conversation : EventIM
 {
-    public bool conversationStart;
-    public bool conversationFinish;
     /**
      * Future implementation: Track if the user left mid-conversation and where. 
      * protected bool startedButNotFinished;
@@ -16,7 +14,7 @@ public class Conversation : EventIM
     {
         foreach (Transform child in transform)
         {
-            Debug.Log("Adding : " + child.name);
+            //Debug.Log("Adding : " + child.name);
             events.Add(child.GetComponentInChildren<EventIM>());
         }
     }

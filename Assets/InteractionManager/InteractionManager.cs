@@ -41,7 +41,8 @@ public class InteractionManager : MonoBehaviour
 
     public List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
-    public List<EventIM> eventsCheck = new List<EventIM>(); //The list of events IM is always checking
+    public List<EventIM> convoEvents = new List<EventIM>();
+
     protected EventSettingValue esv; //state comparisons to GUI
 
     protected DialogManager dm;
@@ -89,29 +90,27 @@ public class InteractionManager : MonoBehaviour
         jm = new JumpManager(events.Count);
         start = true;
 
-        if (cm.activateConversation)
-        {
-            //cm.setConversations(events);
-            foreach (EventIM c in events)
-            {
-                eventsCheck.Add(c.GetComponentInChildren<EventIM>()); //ADDS ALL EVENTS
-            }
-        }
     }
 
     private void Update() {
-        if (eventID < events.Count && start && !sm.isWaiting )
+        if (eventID < events.Count && start && !sm.isWaiting)
         {
-            if (!cm.activateConversation)
+            if (!cm.activateConversation || cm.inConversation())
                 RunGame();
             else
                 conversationCheck(); //If we are also not in a current conversation else runGame (Normally)
         }
+        /**else
+            Debug.Log("ID: " + eventID + "\ncount: " + events.Count + "\nstart: " + start + "\nwaiting: false " + !sm.isWaiting);**/
     }
 
     public void RunGame()
     {
-        EventIM e = events.ElementAt(eventID); //get curr event
+        EventIM e;
+        if (!cm.activateConversation)
+            e = events.ElementAt(eventID); //get curr event
+        else
+            e = convoEvents.ElementAt(eventID);
         if ( e.started && !e.isDone ) //waiting
             return;
         if ( e.name != "Trigger") {
@@ -121,10 +120,8 @@ public class InteractionManager : MonoBehaviour
         speaking = getSpeakingState();
         if ( (matches && !speaking)|| e.name == "Trigger" )
         {
-            //if (cm.activateConversations)
-                //cm.checkConversations(e);
             memories.Add(eventIndex);
-            Debug.Log("Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.GetInstanceID());
+            Debug.Log("Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.GetInstanceID() + " Desc: " + e.IDescription);
             switch (e.name)
             {
                 case "Dialog":
@@ -178,7 +175,6 @@ public class InteractionManager : MonoBehaviour
                     break;
                 case "MemoryCheck":
                     mcm.CheckMemories(e.GetComponent<MemoryCheck>());
-                    //done();
                     break;
             }
             done();
@@ -251,7 +247,7 @@ public class InteractionManager : MonoBehaviour
     }
     private void done()
     {
-        //Debug.Log("Finished Event!");
+        Debug.Log("Finished Event!");
         isInEvent = false;
         speaking = false;
         esv.reset();
@@ -259,9 +255,30 @@ public class InteractionManager : MonoBehaviour
 
     public void conversationCheck()
     {
-        foreach (Conversation c in cm.conversations)
+        foreach (EventIM e in events)
         {
-            Debug.Log("Debug1: " + c.name);
+            /** Note: In editor, Conversation script needs to be first in order
+             * for IM to refrence conversation agent and not the agent in EventIM **/
+            //Debug.Log("DEBUG: " + e.name + " W/ " + e.agent);
+            //IF E(Convo) has started && !done
+            if (e.started && !e.isDone) //waiting
+                return;
+            if (e.name != "Trigger")
+                sm = e.agent.GetComponent<AgentStatusManager>();
+            matches = getState(e); //check the conversation state
+            //Debug.Log("M: " + matches + " w/Agent: " + sm);
+            speaking = getSpeakingState(); //check if anybody is speaking in the scene
+            if ((matches && !speaking) || e.name == "Trigger")
+            {
+                //memories.Add(eventIndex);
+                Debug.Log("Conversation playing: " + e.name);
+                /**if its a conversation then play the first event of that conversation and continue with rungame? 
+                 * (w/ the rest of the conversation events while conversation state parameters still true).
+                 * conversationCheck will always be checking if any other event has been triggered.. **/
+                convoEvents = cm.grabConversationEvents(e);
+                e.started = true;
+                RunGame();
+            }
         }
     }
 }

@@ -20,7 +20,12 @@ public class ConversationManager : MonoBehaviour {
     [Tooltip("Mandatory. Jump to this ID if the conversation HAS NOT occured.")]
     public GameObject[] conversationsToOccur;
 
-    public void setConversations(List<EventIM> events)
+    private void Start()
+    {
+        firstEvents();
+    }
+
+    public void setConversations(List<EventIM> events) //If we are setting our conversations in the editor this method is useless...
     {
         int i = 0;
         foreach (EventIM e in events)
@@ -36,9 +41,32 @@ public class ConversationManager : MonoBehaviour {
         List<EventIM> e = new List<EventIM>();
         foreach (Conversation c in conversations)
         {
-            Debug.Log("Conversation " + c.conversationName + " w/event 0  -> " + c.events[0].name );
+            //Debug.Log("Conversation " + c.conversationName + " w/event 0  -> " + c.events[0].name );
             e.Add(c.events[0]);
         }
         return e; 
+    }
+
+    public bool inConversation()
+    {
+        foreach (Conversation c in conversations)
+            if (c.started)
+            {
+                Debug.Log("inConvo: True");
+                return true;
+            }
+        Debug.Log("inConvo: False");
+        return false;
+    }
+
+    public List<EventIM> grabConversationEvents(EventIM e)
+    {
+        foreach (Conversation c in conversations)
+        {
+            if (c.name.Equals(e.name))
+                return c.events;
+        }
+        Debug.Log("\tERROR: Conversation not found!");
+        return null;
     }
 }
