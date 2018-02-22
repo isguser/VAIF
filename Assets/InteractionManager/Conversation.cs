@@ -16,6 +16,7 @@ public class Conversation : EventIM
     {
         foreach (Transform child in transform)
         {
+            Debug.Log("Adding : " + child.name);
             events.Add(child.GetComponentInChildren<EventIM>());
         }
     }

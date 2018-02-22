@@ -173,6 +173,7 @@ public class EventIM : MonoBehaviour {
                 conversation.AddComponent<Conversation>();
                 SetParent(conversation);
                 //Add conversation to the conversationManager.conversations
+
                 break;
         }
     }

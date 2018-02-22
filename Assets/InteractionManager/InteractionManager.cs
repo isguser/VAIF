@@ -41,6 +41,7 @@ public class InteractionManager : MonoBehaviour
 
     public List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
+    public List<EventIM> eventsCheck = new List<EventIM>(); //The list of events IM is always checking
     protected EventSettingValue esv; //state comparisons to GUI
 
     protected DialogManager dm;
@@ -87,12 +88,24 @@ public class InteractionManager : MonoBehaviour
 
         jm = new JumpManager(events.Count);
         start = true;
+
+        if (cm.activateConversation)
+        {
+            //cm.setConversations(events);
+            foreach (EventIM c in events)
+            {
+                eventsCheck.Add(c.GetComponentInChildren<EventIM>()); //ADDS ALL EVENTS
+            }
+        }
     }
 
     private void Update() {
         if (eventID < events.Count && start && !sm.isWaiting )
         {
-            RunGame();
+            if (!cm.activateConversation)
+                RunGame();
+            else
+                conversationCheck(); //If we are also not in a current conversation else runGame (Normally)
         }
     }
 
@@ -242,5 +255,13 @@ public class InteractionManager : MonoBehaviour
         isInEvent = false;
         speaking = false;
         esv.reset();
+    }
+
+    public void conversationCheck()
+    {
+        foreach (Conversation c in cm.conversations)
+        {
+            Debug.Log("Debug1: " + c.name);
+        }
     }
 }
