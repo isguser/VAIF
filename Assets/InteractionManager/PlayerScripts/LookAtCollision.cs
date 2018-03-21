@@ -20,13 +20,13 @@ public class LookAtCollision : MonoBehaviour
         camera_LookAt = other.gameObject;
         if (camera_LookAt.tag == tagged)
         {
-            this.gameObject.GetComponent<AgentStatusManager>().isLookedAt = false;
+            this.gameObject.GetComponent<AgentStatusManager>().notLookingAt();
             CancelInvoke("LookedAt");
         }
     }
 
     void LookedAt()
     {
-        this.gameObject.GetComponent<AgentStatusManager>().isLookedAt = true;
+        this.gameObject.GetComponent<AgentStatusManager>().lookingAt();
     }
 }

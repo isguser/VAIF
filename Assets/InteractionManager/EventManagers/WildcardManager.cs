@@ -1,23 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.Windows.Speech;
 
-public class WildcardManager : MonoBehaviour {
-
-    public InteractionManager interactionManager;
+public class WildcardManager : MonoBehaviour
+{
     DictationRecognizer dictationRecognizer;
     protected Wildcard wild;
+    private GameObject jumpToEvent;
+
+    private string TAG = "WM";
 
     // Use this for initialization
-    void Start ()
-    {
-        interactionManager = gameObject.GetComponent<InteractionManager>();
-    }
+    void Start() { }
 
     public void Wildcard(Wildcard wildcard)
     {
+        jumpToEvent = null;
         wild = wildcard;
-        wild.started = true;
-        Debug.Log("Recognizing wildcard...");
+        wild.start();
+        Debug.Log(TAG + " Recognizing...");
         dictationRecognizer = new DictationRecognizer();
 
         dictationRecognizer.DictationComplete += DictationRecognizer_DictationComplete;
@@ -29,27 +29,33 @@ public class WildcardManager : MonoBehaviour {
         {
             if (wild.annotation)
             {
-                Debug.Log("Dictation result: " + text + " @confidence= " + confidence);
+                Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
             }
         };
-        wild.isDone = true;
+        wild.finish();
     }
 
     private void DictationRecognizer_DictationComplete(DictationCompletionCause cause)
     {
         //Debug.Log("Done talking: "+ cause);
-        Debug.Log("Response jump to: " + wild.wildcardJumpID);
-        interactionManager.eventIndex = wild.wildcardJumpID;
+        Debug.Log(TAG + " Response jump to: " + wild.wildcardJumpID);
+        jumpToEvent = wild.wildcardJumpID;
         dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
         dictationRecognizer.Dispose();
-        interactionManager.stopListening(); //isListening = false;
     }
 
-    public bool isRunning() {
+    public bool isRunning()
+    {
         return (dictationRecognizer.Status == SpeechSystemStatus.Running);
     }
 
-    public void stop() {
+    public void stop()
+    {
         dictationRecognizer.Stop();
+    }
+
+    public GameObject getJumpEvent()
+    {
+        return jumpToEvent;
     }
 }

@@ -21,13 +21,13 @@ public class InAgentRange : MonoBehaviour
         PlayerCollider = other.gameObject;
         if (PlayerCollider.tag == tagged)
         {
-            this.gameObject.GetComponentInParent<AgentStatusManager>().isInRange = false;
+            this.gameObject.GetComponentInParent<AgentStatusManager>().movedAway();
             CancelInvoke("InCharacterRange");
         }
     }
 
     void InCharacterRange()
     {
-        this.gameObject.GetComponentInParent<AgentStatusManager>().isInRange = true;
+        this.gameObject.GetComponentInParent<AgentStatusManager>().movedNearby();
     }
 }

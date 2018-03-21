@@ -8,6 +8,7 @@ public class GrammarMapper : IEquatable<GrammarMapper>
 {
     public string item { get; set; }
     public GameObject jumpTo { get; set; }
+    private int jumpToEvent;
 
     public override string ToString()
     {
@@ -39,76 +40,93 @@ public class ResponseManager : MonoBehaviour
     KeywordRecognizer keywordRecognizer;
     Dictionary<string, Action> keywordDictionary = new Dictionary<string, Action>();
     List<GrammarMapper> gMapper = new List<GrammarMapper>();
-    private bool respond = false;
     public AgentStatusManager agentStatus;
     public InteractionManager interactionManager;
 
     Response response;
+    private List<String> repetition = new List<String>();
+    private List<String> affirmation = new List<String>();
+    private List<String> negation = new List<String>();
+    private List<String> unsure = new List<String>();
+
+    private string TAG = "RM";
 
     void Start()
     {
         interactionManager = gameObject.GetComponent<InteractionManager>();
     }
 
-    public void Respond(Response r) {
+    public void Respond(Response r)
+    {
         response = r;
         agentStatus = response.agent.GetComponent<AgentStatusManager>();
-        agentStatus.isListening = true;
-        response.started = true;
-        Debug.Log("Respond");
+        agentStatus.startListening();
+        response.start();
         addResponses();
+        //words adding to dictionary
         keywordRecognizer = new KeywordRecognizer(keywordDictionary.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
-
+        Debug.Log(TAG + "Listening...");
         if (this.response.timeout > 0)
         {
             Invoke("ResponseTimeout", this.response.timeout);
         }
     }
-    private void addResponses() {
-        //untested --moved from line 58
+
+    private void addResponses()
+    {
         int id = 0;
-        foreach (string g in this.response.grammarItems)
+        foreach (string g in response.responseItems)
+        {
+            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            Debug.Log(TAG + g + " jumps to: " + response.jumpIDs[id].GetComponent<EventIM>().IDescription);
+            keywordDictionary.Add(g, () => { });
+            if (g.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
+                addAffirmations(id); //tested gucci
+            else if (g.Equals("no", StringComparison.InvariantCultureIgnoreCase))
+                addNegatives(id); //tested gucci
+            else if (g.Equals("i don't know", StringComparison.InvariantCultureIgnoreCase))
+                addUnsures(id); //tested gucci
+            id++;
+        }
+        addRepeat(); //TESTME
+    }
+
+    private void addRepeat()
+    {
+        //asking the agent similar 'what' responses incurs a repetition of current event
+        buildRepetitions();
+        foreach (String s in repetition)
+        {
+            gMapper.Add(new GrammarMapper() { item = s, jumpTo = this.response.nextEvent });
+            if (keywordDictionary.ContainsKey(s)) return; //no duplicates
+            keywordDictionary.Add(s, () => { });
+        }
+    }
+
+    private void addAffirmations(int id)
+    {
+        foreach (string g in affirmation)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
             keywordDictionary.Add(g, () => { });
-            if ( g.Equals("yes",StringComparison.InvariantCultureIgnoreCase) )
-                addAffirmations(id); //TESTME
-            else if ( g.Equals("no", StringComparison.InvariantCultureIgnoreCase) )
-                addNegatives(id); //TESTME
-            else if ( g.Equals("i don't know",StringComparison.InvariantCultureIgnoreCase) )
-                addUnsures(id); //TESTME
-            id++;
-        }
-        //addRepeat(); //TESTME
-    }
-    private void addRepeat() {
-        String[] resp = {"can you repeat that","what","what did you say","huh","can you repeat that"};
-        int id = 1;
-        foreach (string g in resp) {
-            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id-1] });
-            keywordDictionary.Add(g, () => { });
-            id++;
         }
     }
-    private void addAffirmations(int id) {
-        String[] aff = {"yeah", "yup", "yep", "okay", "that's okay", "sure", "sounds good"};
-        foreach (string g in aff) {
+
+    private void addNegatives(int id)
+    {
+        foreach (string g in negation)
+        {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
             keywordDictionary.Add(g, () => { });
         }
     }
-    private void addNegatives(int id) {
-        String[] aff = {"nah","nope","no way","no, thank you"};
-        foreach (string g in aff) {
-            gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
-            keywordDictionary.Add(g, () => { });
-        }
-    }
-    private void addUnsures(int id) {
-        String[] aff = {"i dunno","i'm unsure","i'm not sure","maybe","i guess"};
-        foreach (string g in aff) {
+
+    private void addUnsures(int id)
+    {
+        foreach (string g in unsure)
+        {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
             keywordDictionary.Add(g, () => { });
         }
@@ -117,6 +135,7 @@ public class ResponseManager : MonoBehaviour
     protected bool ResponseTimeout()
     {
         interactionManager.eventIndex = response.timeoutJumpID;
+        Debug.Log("timeout is " + response.timeout);
         return false;
     }
 
@@ -132,11 +151,11 @@ public class ResponseManager : MonoBehaviour
             {
                 if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = null }))
                 {
-                    Debug.Log("Response jump to: " + gMapper[i].jumpTo);
+                    Debug.Log(TAG + "Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().IDescription);
                     interactionManager.eventIndex = gMapper[i].jumpTo;
                     keywordRecognizer.Stop();
                     keywordRecognizer.Dispose();
-                    agentStatus.isListening = false;
+                    agentStatus.stopListening();
                     keywordDictionary.Clear();
                     gMapper.Clear();
                     this.stopKeywordRecognizer();
@@ -144,7 +163,12 @@ public class ResponseManager : MonoBehaviour
                 }
             }
         }
-        response.isDone = true;
+        response.finish();
+    }
+
+    public int getJump()
+    {
+        return 0;
     }
 
     public void stopKeywordRecognizer()
@@ -159,14 +183,70 @@ public class ResponseManager : MonoBehaviour
 
     public bool isRunning()
     {
-        if (keywordRecognizer!=null)
+        if (keywordRecognizer != null)
             return keywordRecognizer.IsRunning;
         return false;
     }
 
-    public void stop()
+    private void buildRepetitions()
     {
-        keywordRecognizer.Stop();
+        if (repetition.Contains("What")) //first item
+            return; //no duplicates
+        repetition.Add("What");
+        repetition.Add("Huh");
+        repetition.Add("I don't know what you said");
+        repetition.Add("What was that");
+        repetition.Add("What did you say");
+        repetition.Add("Say that again");
+        repetition.Add("Say it again");
+        repetition.Add("Say again");
+        repetition.Add("Come again");
+        repetition.Add("Can you repeat that");
+        repetition.Add("Can you repeat what you said");
+        repetition.Add("Can you repeat what you just said");
+        repetition.Add("Repeat it");
+        repetition.Add("Repeat that");
+        repetition.Add("Repeat yourself");
+        repetition.Add("Repeat what you said");
+        repetition.Add("Repeat what you just said");
+    }
+
+    private void buildAffirmations()
+    {
+        if (affirmation.Contains("yeah")) //first item
+            return; //no duplicates
+        affirmation.Add("yeah");
+        affirmation.Add("yup");
+        affirmation.Add("yep");
+        affirmation.Add("okay");
+        affirmation.Add("sure");
+        affirmation.Add("sounds good");
+        affirmation.Add("that sounds good");
+        affirmation.Add("uh huh");
+    }
+
+    private void buildNegations()
+    {
+        if (negation.Contains("nah")) //first item
+            return; //no duplicates
+        negation.Add("nah");
+        negation.Add("nope");
+        negation.Add("no way");
+        negation.Add("no, thank you");
+        negation.Add("no, thanks");
+    }
+
+    private void buildUnsure()
+    {
+        if (unsure.Contains("i'm unsure")) //first item
+            return; //no duplicates
+        unsure.Add("i'm unsure");
+        unsure.Add("i'm not sure");
+        unsure.Add("i dunno");
+        unsure.Add("i have no idea");
+        unsure.Add("i have no clue");
+        unsure.Add("maybe");
+        unsure.Add("i guess");
     }
 }
 

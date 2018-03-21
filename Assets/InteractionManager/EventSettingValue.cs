@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventSettingValue : MonoBehaviour {
-    private bool[] want = new bool[]{false,false};
+public class EventSettingValue : MonoBehaviour
+{
+    private bool[] want = new bool[] { false, false };
     private bool[] dontcare = new bool[] { false, false };
     private bool[] doingVerbals = new bool[] { false, false };
 
-    public EventSettingValue() {
+    public EventSettingValue()
+    {
         //don't care
     }
 
-    public void setValues(EventIM.EventSetting isInRange, EventIM.EventSetting isLookedAt, bool isSpeaking, bool isListening) {
+    public void setValues(EventIM.EventSetting isInRange, EventIM.EventSetting isLookedAt, bool isSpeaking, bool isListening)
+    {
         //Use the enums in InteractionManager
-        switch ( isInRange ) {
+        switch (isInRange)
+        {
             case (EventIM.EventSetting.TRUE):
                 want[0] = true;
                 break;
@@ -24,7 +28,8 @@ public class EventSettingValue : MonoBehaviour {
                 dontcare[0] = true;
                 break;
         }
-        switch (isLookedAt) {
+        switch (isLookedAt)
+        {
             case (EventIM.EventSetting.TRUE):
                 want[1] = true;
                 break;
@@ -40,7 +45,8 @@ public class EventSettingValue : MonoBehaviour {
         doingVerbals[1] = isListening;
     }
 
-    public bool checkStateMatch(bool[] have) {
+    public bool checkStateMatch(bool[] have)
+    {
         /** Returns TRUE IFF the agent is neither talking/listening, AND we have what we want in:
           * isLookedAt
           * isInRange
@@ -59,24 +65,25 @@ public class EventSettingValue : MonoBehaviour {
                 continue;
             else
                 if (want[i] != have[i])
-                {
-                    return false; //if state doesn't match, return false
-                }
+            {
+                return false; //if state doesn't match, return false
+            }
         return true;
     }
 
     private bool talkingOrListening()
     {
-        for ( int i=0; i<doingVerbals.Length; i++ )
-            if ( doingVerbals[i] ) return true;
+        for (int i = 0; i < doingVerbals.Length; i++)
+            if (doingVerbals[i]) return true;
         return false;
     }
 
-    private void debugMe(bool[] have) {
+    private void debugMe(bool[] have)
+    {
         //This code is for testing purposes only
         for (int i = 0; i < want.Length; i++)
         {
-            Debug.Log("Dontcare isInRange=" + dontcare[i] + 
+            Debug.Log("Dontcare isInRange=" + dontcare[i] +
                 "\nDontcare isLookedAt=" + dontcare[i] +
                 "\nWant isInRange=" + want[i] +
                 "\nHave isLookedAt=" + have[i]);
@@ -88,7 +95,7 @@ public class EventSettingValue : MonoBehaviour {
     public void reset()
     {
         //reset otherwise they gon' overlap for next event
-        want = new bool[] { false, false } ;
+        want = new bool[] { false, false };
         dontcare = new bool[] { false, false };
         doingVerbals = new bool[] { false, false };
     }

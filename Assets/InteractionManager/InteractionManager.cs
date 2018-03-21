@@ -34,17 +34,15 @@ public class InteractionManager : MonoBehaviour
     public GameObject eventIndex; //Used for jumps
     public AgentStatusManager[] agents;
     protected int eventID; //Internal ID
-    protected bool start = true;
+    private string TAG = "IM";
+
     protected bool matches = false;
-    protected bool isInEvent = false;
-    protected bool speaking = false; //Used to check if any agent is speaking
 
     public List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
     public List<EventIM> convoEvents = new List<EventIM>();
 
     protected EventSettingValue esv; //state comparisons to GUI
-
     protected DialogManager dm;
     protected AnimationManager am;
     protected ResponseManager rm;
@@ -56,12 +54,9 @@ public class InteractionManager : MonoBehaviour
     protected MemoryCheckManager mcm;
     protected AgentStatusManager sm;
     protected JumpManager jm;
-
-    //work in progress... please show love
     protected ConversationManager cm;
 
-    private void Start()
-    {
+    private void Start() {
         dm = new DialogManager();
         am = new AnimationManager();
         rm = new ResponseManager();
@@ -73,8 +68,6 @@ public class InteractionManager : MonoBehaviour
         mcm = new MemoryCheckManager();
         sm = new AgentStatusManager();
         esv = new EventSettingValue();
-
-        //work in progress
         cm = new ConversationManager();
 
         rm = gameObject.GetComponent<ResponseManager>();
@@ -83,151 +76,122 @@ public class InteractionManager : MonoBehaviour
         wwm = gameObject.GetComponent<WaitManager>();
         mcm = gameObject.GetComponent<MemoryCheckManager>();
         cm = gameObject.GetComponent<ConversationManager>();
-        foreach (Transform child in transform) {
+        foreach (Transform child in transform)
             events.Add(child.GetComponentInChildren<EventIM>());
-        }
 
-        jm = new JumpManager(events.Count);
-        start = true;
-
+        jm = new JumpManager(events.Count); //fixme: this JM handles next eventID value
     }
 
     private void Update() {
-        if (eventID < events.Count && start && !sm.isWaiting)
-        {
+        EventIM e = events.ElementAt(eventID);
+        if ( eventInBounds() && canStartEvent(e) ) {
+            Debug.Log(TAG + e.name + eventID + e.hasStarted());
             if (!cm.activateConversation || cm.inConversation())
-                RunGame();
+                RunGame(e);
             else
                 conversationCheck(); //If we are also not in a current conversation else runGame (Normally)
         }
-        /**else
-            Debug.Log("ID: " + eventID + "\ncount: " + events.Count + "\nstart: " + start + "\nwaiting: false " + !sm.isWaiting);**/
+        if ( e.isDone() ) //if it finished in this frame
+            done(e);
     }
 
-    public void RunGame()
-    {
-        EventIM e;
-        if (!cm.activateConversation)
-            e = events.ElementAt(eventID); //get curr event
-        else
+    public void RunGame(EventIM e) {
+        if ( cm.activateConversation )
             e = convoEvents.ElementAt(eventID);
-        if ( e.started && !e.isDone ) //waiting
-            return;
-        if ( e.name != "Trigger") {
+        if ( e.name!="Trigger" )
             sm = e.agent.GetComponent<AgentStatusManager>();
-        }
         matches = getState(e);
-        speaking = getSpeakingState();
-        if ( (matches && !speaking)|| e.name == "Trigger" )
-        {
+        if ( ( matches && !getSpeakingState() ) || e.name == "Trigger" ) {
             memories.Add(eventIndex);
-            Debug.Log("Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.GetInstanceID() + " Desc: " + e.IDescription);
-            switch (e.name)
-            {
+            Debug.Log(TAG + " Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.GetInstanceID() + " Desc: " + e.IDescription);
+            switch (e.name) {
                 case "Dialog":
                     dm = e.agent.GetComponent<DialogManager>();
-                    dm.Speak(e.GetComponent<Dialog>(), sm);
+                    dm.Speak(e.GetComponent<Dialog>());
                     break;
                 case "Animation":  //Animation needs to be fixed.. dialog will not play if 105 conditions not met but animation will play..
                     am = e.agent.GetComponent<AnimationManager>();
                     am.PlayAnimation(e.GetComponent<Animate>());
-                    //done();
                     break;
                 case "Response":
-                    if (wm.isRunning())
+                    if ( wm.isRunning() )
                         wm.stop();
                     rm.Respond(e.GetComponent<Response>());
-                    //done();
                     break;
                 case "Jump":
                     //TODO get JumpToIDs from GUI (GameObject)
                     eventIndex = e.GetComponent<Jump>().jumpTo;
-                    //done();
                     break;
                 case "Wildcard":
                     if (rm.isRunning())
-                        rm.stop();
+                        rm.stopKeywordRecognizer();
                     wm.Wildcard(e.GetComponent<Wildcard>());
-                    //done();
                     break;
                 case "Trigger":
                     tm.Trigger(e.GetComponent<Trigger>());
-                    //done();
                     break;
                 case "Wait":
                     wwm.Waiting(e.GetComponent<Wait>());
-                    //done();
                     break;
                 case "Move":
                     mm = e.agent.GetComponent<MoveManager>();
                     mm.StartMoving(e.GetComponent<Move>());
-                    //done();
                     break;
                 case "StopMoving":
                     mm = e.agent.GetComponent<MoveManager>();
                     mm.Stop();
-                    //done();
                     break;
                 case "Emote":
                     em = e.agent.GetComponent<EmoteManager>();
                     em.EmotionBlendshape(e.GetComponent<Emote>());
-                   //done();
                     break;
                 case "MemoryCheck":
                     mcm.CheckMemories(e.GetComponent<MemoryCheck>());
                     break;
             }
-            done();
-            eventID++;
+            if ( !eventIsConversational(e) )
+                e.finish();
         }
     }
 
     public void startListening()
     {
-        sm.isListening = true;
+        sm.startListening();
     }
     public void stopListening()
     {
-        sm.isListening = false;
+        sm.stopListening();
     }
     public void startWaiting()
     {
-        sm.isWaiting = true;
+        sm.startWaiting();
     }
     public void stopWaiting()
     {
-        sm.isWaiting = false;
+        sm.stopWaiting();
     }
     public void startSpeaking()
     {
-        sm.isSpeaking = true;
+        sm.startSpeaking();
     }
-    public void stopSpeaking(AgentStatusManager curAgent)
-    {
-        //Debug.Log(sm.name + " talking to false but " + curAgent.name + " was talking.");
+    public void stopSpeaking(AgentStatusManager curAgent) {
         if (curAgent.name == sm.name)
-        {
-            //Debug.Log(sm.name + " speaking: FALSE");
-            sm.isSpeaking = false;
-        }
+            sm.stopSpeaking();
         else
-        {
-            //Debug.Log("Type Mismatch: " + curAgent.name + " != " + sm.name + 
-               // " Set " + curAgent.name + " speaking: FALSE");
-            curAgent.isSpeaking = false;
-        }
+            curAgent.stopSpeaking();
     }
 
     private void setupESV(EventIM e) {
         //grabbing from UNITY
-        esv.setValues(e.isInRange, e.isLookedAt, sm.isSpeaking, sm.isListening);
+        esv.setValues(e.wantInRange, e.wantLookedAt, sm.isSpeaking(), sm.isListening());
     }
-    private bool getState(EventIM e) {
+    private bool getState(EventIM e)
+    {
         setupESV(e);
         //gets the current isInRange and isLookedAt state
         bool[] b = new bool[2];
-        b[0] = sm.isInRange;
-        b[1] = sm.isLookedAt;
+        b[0] = sm.isInRange();
+        b[1] = sm.isLookedAt();
         return esv.checkStateMatch(b);
     }
 
@@ -235,7 +199,7 @@ public class InteractionManager : MonoBehaviour
     {
         foreach (AgentStatusManager A in agents)
         {
-            if (A.isSpeaking)
+            if (A.isSpeaking())
             {
                 //Debug.Log(A.name + " is speaking.");
                 return true;
@@ -243,14 +207,15 @@ public class InteractionManager : MonoBehaviour
         }
         //Debug.Log("Nobody is speaking.");
         return false;
-       
+
     }
-    private void done()
+    private void done(EventIM e)
     {
-        Debug.Log("Finished Event!");
-        isInEvent = false;
-        speaking = false;
+        Debug.Log(TAG + " Finished Event " + e.name + " at index " + eventID);
+        sm.stopSpeaking();
         esv.reset();
+        e.finish();
+        eventID++;
     }
 
     public void conversationCheck()
@@ -259,16 +224,12 @@ public class InteractionManager : MonoBehaviour
         {
             /** Note: In editor, Conversation script needs to be first in order
              * for IM to refrence conversation agent and not the agent in EventIM **/
-            //Debug.Log("DEBUG: " + e.name + " W/ " + e.agent);
-            //IF E(Convo) has started && !done
-            if (e.started && !e.isDone) //waiting
+            if (e.hasStarted() && !e.isDone()) //waiting
                 return;
             if (e.name != "Trigger")
                 sm = e.agent.GetComponent<AgentStatusManager>();
             matches = getState(e); //check the conversation state
-            //Debug.Log("M: " + matches + " w/Agent: " + sm);
-            speaking = getSpeakingState(); //check if anybody is speaking in the scene
-            if ((matches && !speaking) || e.name == "Trigger")
+            if ((matches && !getSpeakingState()) || e.name == "Trigger") //check if anybody is speaking in the scene
             {
                 //memories.Add(eventIndex);
                 Debug.Log("Conversation playing: " + e.name);
@@ -276,9 +237,31 @@ public class InteractionManager : MonoBehaviour
                  * (w/ the rest of the conversation events while conversation state parameters still true).
                  * conversationCheck will always be checking if any other event has been triggered.. **/
                 convoEvents = cm.grabConversationEvents(e);
-                e.started = true;
-                RunGame();
+                e.start();
+                RunGame(e);
             }
+        }
+    }
+
+    private bool eventInBounds() {
+        return ( eventID<events.Count && eventID>=0 );
+    }
+
+    private bool canStartEvent(EventIM e) {
+        foreach ( EventIM t in events )
+            if ( t.hasStarted() && !t.isDone() )
+                return false; //some event is in progress
+        return (!sm.isWaiting() && !e.hasStarted() && !e.isDone()); //event hasn't yet started
+    }
+
+    private bool eventIsConversational(EventIM e) { 
+        switch ( e.name ) {
+            case "Dialog":
+            case "Response":
+            case "Wildcard":
+                return true;
+            default:
+                return false;
         }
     }
 }

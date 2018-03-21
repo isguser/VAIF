@@ -4,62 +4,52 @@ using System.Collections.Generic;
 
 public class DialogManager : MonoBehaviour
 {
-    protected List <AudioClip> dialogs =  new List<AudioClip>();
+    protected List<AudioClip> dialogs = new List<AudioClip>();
     protected UnityEngine.Object[] assetDialogs;
 
     protected AudioSource source;
-    protected InteractionManager interactionManager;
-    protected AgentStatusManager agentStatus;
-
     protected AudioClip currentDialog;
-    private Dialog d;
+    private Dialog dialog;
 
-    void Start ()
+    private string TAG = "DM";
+
+    void Start()
     {
-		source = GetComponentInChildren<AudioSource>();
-        interactionManager = FindObjectOfType<InteractionManager>();
+        source = GetComponentInChildren<AudioSource>();
         assetDialogs = Resources.LoadAll("_Dialogs", typeof(AudioClip));
-
         foreach (AudioClip a in assetDialogs)
-        {
             dialogs.Add(a);
-        }
     }
 
-    public void Speak(Dialog dial, AgentStatusManager curAgent)
+    public void Speak(Dialog d)
     {
-        interactionManager.startSpeaking();
-        agentStatus = curAgent;
-        d = dial;
-        d.started = true;
+        dialog = d;
+        dialog.start();
         source.Stop();
-        if (dial.audioFile != null)
+        if (dialog.audioFile != null)
         {
-            currentDialog = dialogs.Find((AudioClip a) => { return a.name == dial.audioFile.name; });
+            currentDialog = dialogs.Find((AudioClip a) => { return a.name == dialog.audioFile.name; });
         }
-        else if(dial.audioFileName != "")
+        else if (dialog.audioFileName != "")
         {
-            currentDialog = dialogs.Find((AudioClip a) => { return a.name == dial.audioFileName; });
+            currentDialog = dialogs.Find((AudioClip a) => { return a.name == dialog.audioFileName; });
         }
 
         if (currentDialog != null)
         {
-			source.clip = currentDialog;
-			source.Play();
-			//Debug.Log("Dialog: " + currentDialog.name + " with length: " + source.clip.length);
-			Invoke("NotSpeaking", source.clip.length);
-		}
-
-		else
+            source.clip = currentDialog;
+            source.Play();
+            Invoke("NotSpeaking", source.clip.length);
+        }
+        else
         {
-			Debug.Log("Dialog audio not found for: " + dial.audioFileName);
-		}
-	}
+            Debug.Log(TAG + " Dialog audio not found for: " + dialog.audioFileName);
+        }
+    }
 
     void NotSpeaking()
     {
-        //Debug.Log("NotSpeaking Invoked!");
-        interactionManager.stopSpeaking(agentStatus);
-        d.isDone = true;
+        Debug.Log(TAG + " Finished Dialog: " + currentDialog.name + ", length: " + source.clip.length);
+        dialog.finish();
     }
 }

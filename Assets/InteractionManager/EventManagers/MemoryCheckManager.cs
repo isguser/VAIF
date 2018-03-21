@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class MemoryCheckManager : MonoBehaviour {
+public class MemoryCheckManager : MonoBehaviour
+{
 
     protected InteractionManager interactionManager;
     protected bool currentMemories = true;
-    protected MemoryCheck memories; 
+    protected MemoryCheck memories;
 
     /**********************************************************
     IF YOU CAN NOT MESS WITH THIS THAT WOULD BE AWESOME
@@ -18,16 +17,16 @@ public class MemoryCheckManager : MonoBehaviour {
     ***********************************************************/
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         interactionManager = FindObjectOfType<InteractionManager>();
     }
 
     public void CheckMemories(MemoryCheck memories)
     {
-        memories.started = true;
+        memories.start();
         this.memories = memories;
-        if(CheckMemory(memories))
+        if (CheckMemory(memories))
         {
             MemoryJump(memories.ifIRemember);
         }
@@ -39,24 +38,24 @@ public class MemoryCheckManager : MonoBehaviour {
 
     bool CheckMemory(MemoryCheck memories)
     {
-        foreach(GameObject m in memories.memoriesToCheck)
+        foreach (GameObject m in memories.memoriesToCheck)
         {
             Debug.Log("MEMORY CHECK: " + m);
             if (!interactionManager.memories.Contains(m))
             {
                 Debug.Log("Memory " + m + " not found");
-                memories.isDone = true;
+                memories.finish();
                 return false;
             }
         }
-        memories.isDone = true;
+        memories.finish();
         return true;
     }
 
     void MemoryJump(GameObject jumpID)
     {
         //TOFIX? Not a proper description... Will only display: Jump to: Animation
-        Debug.Log("Jump to: " + (jumpID.name) );
+        Debug.Log("Jump to: " + (jumpID.name));
         interactionManager.eventIndex = jumpID;
         //TODO grab JM and go from there
     }

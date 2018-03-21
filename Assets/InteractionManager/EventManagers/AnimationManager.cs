@@ -12,7 +12,9 @@ public class AnimationManager : MonoBehaviour
     protected float endTime;
     protected bool looping;
     protected float animationLength = 0f;
-    
+
+    private string TAG = "AM";
+
     private void Start()
     {
         animate = new Animate();
@@ -20,16 +22,18 @@ public class AnimationManager : MonoBehaviour
         assetAnimations = Resources.LoadAll("_Animations", typeof(AnimationClip));
         foreach (AnimationClip a in assetAnimations)
         {
-            if(a.name.ToLower() != "idle")
+            if (a.name.ToLower() != "idle")
             {
                 animations.Add(a);
             }
         }
     }
 
-    
+
     public void PlayAnimation(Animate anim)
     {
+        animate = anim;
+        animate.start();
         CancelInvoke("ReplayAnimation");
         animator = gameObject.GetComponent<Animator>();
         animate.loop = anim.loop;
@@ -37,7 +41,6 @@ public class AnimationManager : MonoBehaviour
         animate.animation = anim.animation;
         animate.timeout = anim.timeout;
         Invoke("PlayAnimationDelayedTimeout", anim.delay);
-        anim.started = true;
     }
 
     public void PlayAnimationDelayedTimeout()
@@ -53,18 +56,17 @@ public class AnimationManager : MonoBehaviour
     {
         if (startAnimation)
         {
-            //Debug.Log("Playing animation: " + animate.animation);
+            //Debug.Log(TAG + " Playing animation: " + animate.animation);
             int index = findAnimation(animate.animation);
             if (looping)
             {
-                Debug.Log(index);
                 animator.SetInteger("pathIndex", index);
                 startAnimation = false;
                 looping = false;
                 Invoke("ReplayAnimation", animationLength);
             }
 
-            if(!looping)
+            if (!looping)
             {
                 animator.SetInteger("pathIndex", index);
                 startAnimation = false;
@@ -73,7 +75,7 @@ public class AnimationManager : MonoBehaviour
                     Invoke("ToIdle", animationLength);
                 }
             }
-        } 
+        }
     }
 
     public int findAnimation(string animation)
@@ -95,11 +97,12 @@ public class AnimationManager : MonoBehaviour
     {
         looping = true;
         startAnimation = true;
+        animate.start();
     }
 
-	public void ToIdle()
+    public void ToIdle()
     {
         animator.SetInteger("pathIndex", -1);
-        animate.isDone = true;
-	}
+        animate.finish();
+    }
 }

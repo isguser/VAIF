@@ -13,13 +13,13 @@ public class MoveManager : MonoBehaviour
         moveTarget = move.target.transform.position;
         Debug.Log(moveTarget);
         moving = true;
-        target.started = true;
+        target.finish();
     }
 
     public void Stop()
     {
         moving = false;
-        move.isDone = true;
+        move.finish();
     }
 
     private void Update()
