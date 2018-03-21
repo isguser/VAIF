@@ -53,7 +53,7 @@ public class JumpManager : MonoBehaviour
 
     public int getNextEventIndex(EventIM e)
     {
-        Debug.Log(TAG + " Finding nextEvent for: " + e.name);
+        //Debug.Log(TAG + " Finding nextEvent for: " + e.name);
         //return e's nextEventID
         for (int i = 0; i < events.Count; i++)
             if (events[i] == e)

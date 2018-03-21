@@ -1,9 +1,9 @@
-# VRAIN
-The Virtual Reality Agent Interaction Network (VRAIN) is a Unity package that allows users to create intelligent agents with minimal effort.
+# VAIF
+The Virtual Agent Interaction Framework (VAIF) is a Unity package that allows users to create intelligent agents with minimal effort.
 
 ## Short-Term Features In Development
-The following is a list of tasks to-do or that are currently in the process of development:
-1. JumpManager: adding 'jumps' between Events
+The following is a list of features that are currently in the process of development:
+1. WildcardManager: handle verbal inputs
 2. RotateManager: turn the agent smoothly
 3. MemoryCheckManager: alter agent behavior based on memory (interactions with user(s)) -- requires logic/reasoning
 
@@ -14,4 +14,6 @@ The following is a list of tasks to-do or that are currently in the process of d
 
 ## History
 ### Current Release
-Current released version tracks when EventIM type instances (Response, Dialog, Animation, etc.) are completed. No more running through a list of events!
+ResponseManager has been fixed to recognize inputs. JumpManager has been updated, which handles the sequence of events within a conversation. The tool now allows for generalized state management (AgentStatusManager and ESV) rather than relying on only listening/speaking.
+### Previous Release
+This previous version tracks when EventIM type instances (Response, Dialog, Animation, etc.) are completed. No more running through a list of events!

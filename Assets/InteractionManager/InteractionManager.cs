@@ -85,13 +85,12 @@ public class InteractionManager : MonoBehaviour
     private void Update() {
         EventIM e = events.ElementAt(eventID);
         if ( eventInBounds() && canStartEvent(e) ) {
-            Debug.Log(TAG + e.name + eventID + e.hasStarted());
             if (!cm.activateConversation || cm.inConversation())
                 RunGame(e);
             else
                 conversationCheck(); //If we are also not in a current conversation else runGame (Normally)
         }
-        if ( e.isDone() ) //if it finished in this frame
+        if ( e.isDone() ) //if event finished in this frame
             done(e);
     }
 
@@ -103,7 +102,7 @@ public class InteractionManager : MonoBehaviour
         matches = getState(e);
         if ( ( matches && !speaking() ) || e.name == "Trigger" ) {
             memories.Add(eventIndex);
-            Debug.Log(TAG + " Event index playing..." + e.name + " Speaking: " + e.agent.name + " Instance ID : " + e.GetInstanceID() + " Desc: " + e.IDescription);
+            Debug.Log(TAG + " Playing event " + e.name + " at index " + eventID);
             switch (e.name) {
                 case "Dialog":
                     dm = e.agent.GetComponent<DialogManager>();
@@ -154,6 +153,7 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
+    /* ********** Mutators: State Changes ********** */
     public void startListening()
     {
         sm.startListening();
@@ -180,7 +180,8 @@ public class InteractionManager : MonoBehaviour
         else
             curAgent.stopSpeaking();
     }
-    
+
+    /* ********** Accessors: State Changes ********** */
     private bool getState(EventIM e) {
         //grabbing author choices from UNITY
         esv.setLookedAt(e.wantLookedAt);
@@ -197,8 +198,10 @@ public class InteractionManager : MonoBehaviour
         return false;
     }
 
-    private void done(EventIM e) {
-        Debug.Log(TAG + " Finished Event " + e.name + " at index " + eventID);
+    /* ********** Mutators: Event Sequence Behavior ********** */
+    private void done(EventIM e)
+    {
+        Debug.Log(TAG + " Finished Event " + e.name);
         sm.stopSpeaking();
         esv.reset();
         e.finish();

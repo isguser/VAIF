@@ -67,7 +67,7 @@ public class ResponseManager : MonoBehaviour
         keywordRecognizer = new KeywordRecognizer(keywordDictionary.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
-        Debug.Log(TAG + "Listening...");
+        Debug.Log(TAG + " " + agentStatus.name + " is listening...");
         if (this.response.timeout > 0)
         {
             Invoke("ResponseTimeout", this.response.timeout);
@@ -77,7 +77,7 @@ public class ResponseManager : MonoBehaviour
     private void addResponses()
     {
         int id = 0;
-        foreach (string g in response.responseItems)
+        foreach (string g in this.response.responseItems)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
             Debug.Log(TAG + g + " jumps to: " + response.jumpIDs[id].GetComponent<EventIM>().IDescription);
@@ -135,7 +135,7 @@ public class ResponseManager : MonoBehaviour
     protected bool ResponseTimeout()
     {
         interactionManager.eventIndex = response.timeoutJumpID;
-        Debug.Log("timeout is " + response.timeout);
+        Debug.Log(TAG + " timeout is " + response.timeout);
         return false;
     }
 
@@ -145,13 +145,13 @@ public class ResponseManager : MonoBehaviour
         // if the keyword recognized is in our dictionary, call that Action.
         if (keywordDictionary.TryGetValue(args.text, out keywordAction))
         {
-            Debug.Log(args.text + " recognized. Action invoked " + keywordAction.ToString());
+            Debug.Log(TAG + " " + args.text + " recognized; invoked: " + keywordAction.ToString());
             //foreach (GrammarMapper gm in gMapper) { Debug.Log(gm.ToString()); }
             for (int i = 0; i < gMapper.Count; i++)
             {
                 if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = null }))
                 {
-                    Debug.Log(TAG + "Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().IDescription);
+                    Debug.Log(TAG + " Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().IDescription);
                     interactionManager.eventIndex = gMapper[i].jumpTo;
                     keywordRecognizer.Stop();
                     keywordRecognizer.Dispose();
@@ -176,6 +176,7 @@ public class ResponseManager : MonoBehaviour
         PhraseRecognitionSystem.Shutdown();
         if (keywordRecognizer != null)
         {
+            response.finish();
             keywordRecognizer.Stop();
             keywordRecognizer.Dispose();
         }

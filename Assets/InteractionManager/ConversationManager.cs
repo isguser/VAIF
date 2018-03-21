@@ -20,6 +20,8 @@ public class ConversationManager : MonoBehaviour {
     [Tooltip("Mandatory. Jump to this ID if the conversation HAS NOT occured.")]
     public GameObject[] conversationsToOccur;
 
+    private string TAG = "CM";
+
     private void Start()
     {
         firstEvents();
@@ -52,10 +54,10 @@ public class ConversationManager : MonoBehaviour {
         foreach (Conversation c in conversations)
             if (c.started)
             {
-                Debug.Log("inConvo: True");
+                Debug.Log(TAG + " We are in a conversation");
                 return true;
             }
-        Debug.Log("inConvo: False");
+        Debug.Log(TAG + " We are NOT in a conversation");
         return false;
     }
 
@@ -66,7 +68,7 @@ public class ConversationManager : MonoBehaviour {
             if (c.name.Equals(e.name))
                 return c.events;
         }
-        Debug.Log("\tERROR: Conversation not found!");
+        Debug.Log(TAG + " \tERROR: Conversation not found!");
         return null;
     }
 }

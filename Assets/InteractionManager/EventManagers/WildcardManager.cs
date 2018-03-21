@@ -30,14 +30,14 @@ public class WildcardManager : MonoBehaviour
             if (wild.annotation)
             {
                 Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
+                wild.finish();
             }
         };
-        wild.finish();
     }
 
     private void DictationRecognizer_DictationComplete(DictationCompletionCause cause)
     {
-        //Debug.Log("Done talking: "+ cause);
+        wild.finish();
         Debug.Log(TAG + " Response jump to: " + wild.wildcardJumpID);
         jumpToEvent = wild.wildcardJumpID;
         dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
@@ -51,6 +51,7 @@ public class WildcardManager : MonoBehaviour
 
     public void stop()
     {
+        wild.finish();
         dictationRecognizer.Stop();
     }
 

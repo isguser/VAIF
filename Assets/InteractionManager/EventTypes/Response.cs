@@ -6,9 +6,9 @@
 /// </summary>
 public class Response : EventIM
 {
-    [Tooltip("Mandatory. Text version of all reognizable words.\n 'yes' will add similar affirmative responses.\n 'no' will add similar negative responses.\n 'i don't know' will add similar unsure responses.")]
+    [Tooltip("Mandatory. Text version of all recognizable words.\n 'yes' will add similar affirmative responses.\n 'no' will add similar negative responses.\n 'i don't know' will add similar unsure responses.")]
     public string[] responseItems;
-    [Tooltip("Mandatory. Event ID's as integers to match each grammar item to its consequence.")]
+    [Tooltip("Mandatory. Drag and drop all next event(s) to match each response item to its consequence.")]
     public GameObject[] jumpIDs;
     [Tooltip("Optional. How long until the character stops listening (in seconds).")]
     public float timeout;
