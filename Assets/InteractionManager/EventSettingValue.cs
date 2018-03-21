@@ -7,16 +7,24 @@ public class EventSettingValue : MonoBehaviour
     private bool[] want = new bool[] { false, false };
     private bool[] dontcare = new bool[] { false, false };
     private bool[] doingVerbals = new bool[] { false, false };
+    private string TAG = "ESM";
+
+    /** CONVENTION
+     * want[0], dontcare[0] hold the inRange EventSetting
+     * want[1], dontcare[1] hold the isLookedAt EventSetting
+     * doingVerbals[0] holds the speaking state 
+     * doingVerbals[1] holds the listening state */
 
     public EventSettingValue()
     {
         //don't care
     }
 
-    public void setValues(EventIM.EventSetting isInRange, EventIM.EventSetting isLookedAt, bool isSpeaking, bool isListening)
+
+    public void setInRange(EventIM.EventSetting w)
     {
-        //Use the enums in InteractionManager
-        switch (isInRange)
+        //store what the author wants
+        switch (w)
         {
             case (EventIM.EventSetting.TRUE):
                 want[0] = true;
@@ -28,7 +36,12 @@ public class EventSettingValue : MonoBehaviour
                 dontcare[0] = true;
                 break;
         }
-        switch (isLookedAt)
+    }
+
+    public void setLookedAt(EventIM.EventSetting w)
+    {
+        //store what the author wants
+        switch (w)
         {
             case (EventIM.EventSetting.TRUE):
                 want[1] = true;
@@ -40,41 +53,39 @@ public class EventSettingValue : MonoBehaviour
                 dontcare[1] = true;
                 break;
         }
-        //store if the agent is talking/listening in this event
-        doingVerbals[0] = isSpeaking;
-        doingVerbals[1] = isListening;
+    }
+
+    public void setVerbals(bool[] sysState)
+    {
+        //store the current verbal state of the system
+        doingVerbals[0] = sysState[0];
+        doingVerbals[1] = sysState[1];
     }
 
     public bool checkStateMatch(bool[] have)
     {
-        /** Returns TRUE IFF the agent is neither talking/listening, AND we have what we want in:
+        /** Returns TRUE if the agent is neither talking/listening, AND we have what we want in:
           * isLookedAt
           * isInRange
           */
-        //debugMe(have);
         if (have.Length != want.Length)
-        {
             return false; //mismatched sizes
-        }
         if (talkingOrListening())
-        {
             return false; //agent is talk-/listen-ing
-        }
         for (int i = 0; i < dontcare.Length; i++)
             if (dontcare[i]) //if we don't care if T/F, skip it
                 continue;
             else
                 if (want[i] != have[i])
-            {
                 return false; //if state doesn't match, return false
-            }
         return true;
     }
 
     private bool talkingOrListening()
     {
         for (int i = 0; i < doingVerbals.Length; i++)
-            if (doingVerbals[i]) return true;
+            if (doingVerbals[i])
+                return true;
         return false;
     }
 
@@ -83,20 +94,22 @@ public class EventSettingValue : MonoBehaviour
         //This code is for testing purposes only
         for (int i = 0; i < want.Length; i++)
         {
-            Debug.Log("Dontcare isInRange=" + dontcare[i] +
-                "\nDontcare isLookedAt=" + dontcare[i] +
-                "\nWant isInRange=" + want[i] +
-                "\nHave isLookedAt=" + have[i]);
+            Debug.Log(TAG + " i=" + i + " Dontcare=" + dontcare[i] +
+                " Want=" + want[i] +
+                " Have=" + have[i]);
         }
-        Debug.Log("isSpeaking: " + doingVerbals[0] +
-                "\nisListening: " + doingVerbals[1]);
+        Debug.Log(TAG + "isSpeaking: " + doingVerbals[0] + " isListening: " + doingVerbals[1]);
     }
 
     public void reset()
     {
-        //reset otherwise they gon' overlap for next event
-        want = new bool[] { false, false };
-        dontcare = new bool[] { false, false };
-        doingVerbals = new bool[] { false, false };
+        //reset for next event
+        for (int i = 0; i < want.Length; i++)
+        {
+            want[i] = false;
+            dontcare[i] = false;
+            if (i < doingVerbals.Length)
+                doingVerbals[i] = false;
+        }
     }
 }
