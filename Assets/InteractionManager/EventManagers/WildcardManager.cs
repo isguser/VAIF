@@ -28,14 +28,14 @@ public class WildcardManager : MonoBehaviour
         dictationRecognizer.DictationResult += (text, confidence) =>
         {
             Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
-            wild.finish();
+            stop();
         };
     }
 
     private void DictationRecognizer_DictationComplete(DictationCompletionCause cause) {
         wild.finish();
         //Debug.Log(TAG + " Response jump to: " + wild.wildcardJumpID);
-        jumpToEvent = wild.wildcardJumpID;
+        //jumpToEvent = wild.wildcardJumpID;
         dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
         dictationRecognizer.Dispose();
 
@@ -44,19 +44,26 @@ public class WildcardManager : MonoBehaviour
         dictationRecognizer.DictationResult += (text, confidence) =>
         {
             Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
-            wild.finish();
+            stop();
         };
+
+        stop();
     }
 
     public bool isRunning()
     {
-        return (dictationRecognizer.Status == SpeechSystemStatus.Running);
+        return ( dictationRecognizer!=null || (dictationRecognizer.Status == SpeechSystemStatus.Running));
     }
 
     public void stop()
     {
-        wild.finish();
-        dictationRecognizer.Stop();
+        if (wild != null)
+        {
+            wild.nextEvent = jumpToEvent;
+            wild.finish();
+        }
+        if ( dictationRecognizer!=null )
+            dictationRecognizer.Stop();
     }
 
     public GameObject getJumpEvent()

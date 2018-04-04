@@ -49,6 +49,8 @@ public class ResponseManager : MonoBehaviour
     private List<String> negation = new List<String>();
     private List<String> unsure = new List<String>();
 
+    private GameObject nextEvent;
+
     private string TAG = "RM";
 
     void Start()
@@ -80,17 +82,17 @@ public class ResponseManager : MonoBehaviour
         foreach (string g in this.response.responseItems)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
-            Debug.Log(TAG + g + " jumps to: " + response.jumpIDs[id].GetComponent<EventIM>().IDescription);
+            //Debug.Log(TAG + g + " jumps to: " + response.jumpIDs[id].GetComponent<EventIM>().IDescription);
             keywordDictionary.Add(g, () => { });
             if (g.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
-                addAffirmations(id); //tested gucci
+                addAffirmations(id);
             else if (g.Equals("no", StringComparison.InvariantCultureIgnoreCase))
-                addNegatives(id); //tested gucci
+                addNegatives(id);
             else if (g.Equals("i don't know", StringComparison.InvariantCultureIgnoreCase))
-                addUnsures(id); //tested gucci
+                addUnsures(id);
             id++;
         }
-        addRepeat(); //TESTME
+        addRepeat();
     }
 
     private void addRepeat()
@@ -134,7 +136,9 @@ public class ResponseManager : MonoBehaviour
 
     protected bool ResponseTimeout()
     {
-        interactionManager.eventIndex = response.timeoutJumpID;
+        //interactionManager.eventIndex = response.timeoutJumpID;
+        nextEvent = response.timeoutJumpID;
+        response.nextEvent = response.timeoutJumpID;
         Debug.Log(TAG + " timeout is " + response.timeout);
         return false;
     }
@@ -151,8 +155,10 @@ public class ResponseManager : MonoBehaviour
             {
                 if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = null }))
                 {
-                    Debug.Log(TAG + " Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().IDescription);
-                    interactionManager.eventIndex = gMapper[i].jumpTo;
+                    Debug.Log(TAG + " Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().name);
+                    //interactionManager.eventIndex = gMapper[i].jumpTo;
+                    nextEvent = gMapper[i].jumpTo;
+                    response.nextEvent = gMapper[i].jumpTo;
                     keywordRecognizer.Stop();
                     keywordRecognizer.Dispose();
                     agentStatus.stopListening();
@@ -166,9 +172,9 @@ public class ResponseManager : MonoBehaviour
         response.finish();
     }
 
-    public int getJump()
+    public EventIM getNextEvent()
     {
-        return 0;
+        return nextEvent.GetComponent<EventIM>();
     }
 
     public void stopKeywordRecognizer()

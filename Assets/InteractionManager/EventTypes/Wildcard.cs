@@ -6,8 +6,8 @@
 /// </summary>
 public class Wildcard : EventIM
 {
-    [Tooltip("Mandatory. Jump to this ID after the microphone picks up any noise.")]
-    public GameObject wildcardJumpID;
+    //[Tooltip("Mandatory. Jump to this ID after the microphone picks up any noise.")]
+    //public GameObject wildcardJumpID;
     [Tooltip("Mandatory. Seconds before a wildcard timeout occurs due to lack of audio input.")]
     public float timeout;
     [Tooltip("Optional. Annotate whatever is picked up by the dictation software.")]

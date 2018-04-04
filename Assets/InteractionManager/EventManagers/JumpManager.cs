@@ -12,24 +12,21 @@ public class JumpManager : MonoBehaviour
     /** nextEvents stores each event's nextEvent (GameObject)
      * CONVENTION: null means there is no next specified 'next' */
 
-    public JumpManager(List<EventIM> e)
-    {
-        Debug.Log(TAG + " breh");
-        load(e);
-        Debug.Log(TAG + " wut");
-    }
+    public JumpManager() { }
 
     public void load(List<EventIM> e)
     {
         events = e;
-        Debug.Log(TAG + " maybe");
         init();
     }
 
     private void init() {
         //get each event's nextEvent GameObject, if any
         for (int i = 0; i < events.Count; i++) {
-            Debug.Log(TAG + " this" + events[i].name);
+            if ( events[i].nextEvent!=null )
+                next.Add(events[i].nextEvent.GetComponent<EventIM>());
+            else
+                next.Add(new EventIM()); //never equal an empty object
         }
     }
 
@@ -37,9 +34,9 @@ public class JumpManager : MonoBehaviour
     {
         //return e's nextEvent
         for (int i = 0; i < events.Count; i++)
-            if ( events[i]==e )
+            if ( events[i]==e ) {
                 return next[i];
-        Debug.Log(TAG + " no next event: " + e.name);
+            }
         return null; //likely unreachable
     }
 }

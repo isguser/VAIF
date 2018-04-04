@@ -22,6 +22,7 @@ public class EventIM : MonoBehaviour
     protected EventSetting eventSetting;
     public enum EventType
     {
+        Conversation,
         Dialog,
         Animation,
         Response,
@@ -44,6 +45,18 @@ public class EventIM : MonoBehaviour
     public void AddEvent(string type) {
         switch (type)
         {
+            case "Conversation":
+                GameObject conversation = new GameObject();
+                conversation.name = "Conversation";
+                conversation.AddComponent<Conversation>();
+                conversation.AddComponent<JumpManager>();
+                conversation.AddComponent<EventIM>();
+                conversation.GetComponent<Conversation>().agent = agent;
+                conversation.GetComponent<Conversation>().nextEvent = nextEvent;
+                conversation.GetComponent<Conversation>().wantInRange = wantInRange;
+                eventType = EventType.Conversation;
+                SetParent(conversation);
+                break;
             case "Dialog":
                 GameObject dialog = new GameObject();
                 dialog.name = "Dialog";

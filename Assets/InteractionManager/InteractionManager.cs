@@ -31,19 +31,15 @@ using System.Linq;
 
 public class InteractionManager : MonoBehaviour
 {
-    //public AnimationManager animations;
-    public GameObject eventIndex; //Used for jumps
     public AgentStatusManager[] agents;
-    private string TAG = "IM";
-
-    protected bool matches = false;
-
     public List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
-    public List<EventIM> convoEvents = new List<EventIM>();
-    private EventIM lastPlayed;
 
-    protected EventSettingValue esv; //state comparisons to GUI
+    private EventIM lastPlayed;
+    private string TAG = "IM";
+    protected bool matches = false;
+
+    protected EventSettingValue esv;
     protected DialogManager dm;
     protected AnimationManager am;
     protected ResponseManager rm;
@@ -83,10 +79,11 @@ public class InteractionManager : MonoBehaviour
     }
 
     private void Update() {
+        if ( lastPlayed!=null && eventNeedsResponse(lastPlayed) && lastPlayed.nextEvent==null )
+            return;
         EventIM e;
         //find the first Conversation to play this game
         foreach ( Conversation c in cm.conversations ) {
-            //Debug.Log(TAG + " anything?");
             //is the Conversation complete?
             if ( c.isOver() ) {
                 c.finish();
@@ -94,8 +91,7 @@ public class InteractionManager : MonoBehaviour
             }
             conversation = c;
             //get the next event to run in this Conversation
-            //e = c.findNextEvent(lastPlayed);
-            e = c.getFirstUnfinishedEvent();
+            e = nextEvent();
             //is another event running?
             if ( !canStartEvent(e) )
                 return; //wait til the next frame
@@ -132,13 +128,12 @@ public class InteractionManager : MonoBehaviour
                     am.PlayAnimation(e.GetComponent<Animate>());
                     break;
                 case "Response":
-                    if ( wm.isRunning() )
+                    if ( wm!=null || wm.isRunning() )
                         wm.stop();
                     rm.Respond(e.GetComponent<Response>());
                     break;
                 case "Jump":
-                    //TODO get JumpToIDs from GUI (GameObject)
-                    eventIndex = e.GetComponent<Jump>().jumpTo;
+                    //TODO jump between conversations?
                     break;
                 case "Wildcard":
                     if (rm.isRunning())
@@ -241,10 +236,34 @@ public class InteractionManager : MonoBehaviour
         return (!sm.isWaiting() && !e.hasStarted() && !e.isDone());
     }
 
+    private EventIM nextEvent()
+    {
+        //start if we have not played any yet
+        if (lastPlayed == null)
+            return conversation.getFirstUnfinishedEvent();
+        //if the event is conversational, it had multiple nextEvent possibilities
+        if ( eventNeedsResponse(lastPlayed) )
+            return lastPlayed.nextEvent.GetComponent<EventIM>();
+        return conversation.findNextEvent(lastPlayed);
+    }
+
     private bool eventIsConversational(EventIM e) {
         //of what type is the conversation?
         switch ( e.name ) {
             case "Dialog":
+            case "Response":
+            case "Wildcard":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private bool eventNeedsResponse(EventIM e)
+    {
+        //of what type is the conversation?
+        switch (e.name)
+        {
             case "Response":
             case "Wildcard":
                 return true;

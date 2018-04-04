@@ -56,7 +56,7 @@ public class MemoryCheckManager : MonoBehaviour
     {
         //TOFIX? Not a proper description... Will only display: Jump to: Animation
         Debug.Log("Jump to: " + (jumpID.name));
-        interactionManager.eventIndex = jumpID;
+        //interactionManager.eventIndex = jumpID;
         //TODO grab JM and go from there
     }
 }
