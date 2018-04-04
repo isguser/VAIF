@@ -41,9 +41,7 @@ public class EventIM : MonoBehaviour
     public bool started = false;
     public bool finished = false;
 
-    public void AddEvent(string type)
-    {
-
+    public void AddEvent(string type) {
         switch (type)
         {
             case "Dialog":
@@ -53,6 +51,7 @@ public class EventIM : MonoBehaviour
                 dialog.GetComponent<Dialog>().agent = agent;
                 dialog.GetComponent<Dialog>().nextEvent = nextEvent;
                 dialog.GetComponent<Dialog>().wantInRange = wantInRange;
+                eventType = EventType.Dialog;
                 SetParent(dialog);
                 break;
             case "Animation":
@@ -62,6 +61,7 @@ public class EventIM : MonoBehaviour
                 animation.GetComponent<Animate>().agent = agent;
                 animation.GetComponent<Animate>().nextEvent = nextEvent;
                 SetParent(animation);
+                eventType = EventType.Animation;
                 break;
             case "Response":
                 GameObject response = new GameObject();
@@ -70,6 +70,7 @@ public class EventIM : MonoBehaviour
                 response.GetComponent<Response>().agent = agent;
                 response.GetComponent<Response>().nextEvent = nextEvent;
                 SetParent(response);
+                eventType = EventType.Response;
                 break;
             case "Wildcard":
                 GameObject wildcard = new GameObject();
@@ -78,6 +79,7 @@ public class EventIM : MonoBehaviour
                 wildcard.GetComponent<Wildcard>().agent = agent;
                 wildcard.GetComponent<Wildcard>().nextEvent = nextEvent;
                 SetParent(wildcard);
+                eventType = EventType.Wildcard;
                 break;
             case "Trigger":
                 GameObject trigger = new GameObject();
@@ -86,6 +88,7 @@ public class EventIM : MonoBehaviour
                 //trigger.GetComponent<Trigger>().agent = agent;
                 trigger.GetComponent<Trigger>().nextEvent = nextEvent;
                 SetParent(trigger);
+                eventType = EventType.Trigger;
                 break;
             case "Gaze":
                 GameObject gaze = new GameObject();
@@ -94,6 +97,7 @@ public class EventIM : MonoBehaviour
                 gaze.GetComponent<Gaze>().agent = agent;
                 gaze.GetComponent<Gaze>().nextEvent = nextEvent;
                 SetParent(gaze);
+                eventType = EventType.Gaze;
                 break;
             case "Emote":
                 GameObject emote = new GameObject();
@@ -102,6 +106,7 @@ public class EventIM : MonoBehaviour
                 emote.GetComponent<Emote>().agent = agent;
                 emote.GetComponent<Emote>().nextEvent = nextEvent;
                 SetParent(emote);
+                eventType = EventType.Emote;
                 break;
             case "Expression":
                 GameObject expression = new GameObject();
@@ -110,6 +115,7 @@ public class EventIM : MonoBehaviour
                 expression.GetComponent<Expression>().agent = agent;
                 expression.GetComponent<Expression>().nextEvent = nextEvent;
                 SetParent(expression);
+                eventType = EventType.Emote; //??
                 break;
             case "Jump":
                 GameObject jump = new GameObject();
@@ -118,6 +124,7 @@ public class EventIM : MonoBehaviour
                 jump.GetComponent<Jump>().agent = agent;
                 jump.GetComponent<Jump>().nextEvent = nextEvent;
                 SetParent(jump);
+                eventType = EventType.Jump;
                 break;
             case "Wait":
                 GameObject wait = new GameObject();
@@ -126,6 +133,7 @@ public class EventIM : MonoBehaviour
                 wait.GetComponent<Wait>().agent = agent;
                 wait.GetComponent<Wait>().nextEvent = nextEvent;
                 SetParent(wait);
+                eventType = EventType.Wait;
                 break;
             case "MemoryCheck":
                 GameObject memoryCheck = new GameObject();
@@ -134,6 +142,7 @@ public class EventIM : MonoBehaviour
                 memoryCheck.GetComponent<MemoryCheck>().agent = agent;
                 memoryCheck.GetComponent<MemoryCheck>().nextEvent = nextEvent;
                 SetParent(memoryCheck);
+                eventType = EventType.MemoryCheck;
                 break;
             case "EmotionCheck":
                 GameObject emotionCheck = new GameObject();
@@ -142,6 +151,7 @@ public class EventIM : MonoBehaviour
                 emotionCheck.GetComponent<EmotionCheck>().agent = agent;
                 emotionCheck.GetComponent<EmotionCheck>().nextEvent = nextEvent;
                 SetParent(emotionCheck);
+                eventType = EventType.EmotionCheck;
                 break;
             case "RotateTo":
                 GameObject rotateTo = new GameObject();
@@ -150,6 +160,7 @@ public class EventIM : MonoBehaviour
                 rotateTo.GetComponent<RotateTo>().agent = agent;
                 rotateTo.GetComponent<RotateTo>().nextEvent = nextEvent;
                 SetParent(rotateTo);
+                eventType = EventType.RotateTo;
                 break;
             case "Move":
                 GameObject move = new GameObject();
@@ -158,6 +169,7 @@ public class EventIM : MonoBehaviour
                 move.GetComponent<Move>().agent = agent;
                 move.GetComponent<Move>().nextEvent = nextEvent;
                 SetParent(move);
+                eventType = EventType.Move;
                 break;
             case "StopMoving":
                 GameObject stopMoving = new GameObject();
@@ -166,6 +178,7 @@ public class EventIM : MonoBehaviour
                 stopMoving.GetComponent<StopMoving>().agent = agent;
                 stopMoving.GetComponent<StopMoving>().nextEvent = nextEvent;
                 SetParent(stopMoving);
+                eventType = EventType.StopMoving;
                 break;
         }
     }
@@ -192,5 +205,10 @@ public class EventIM : MonoBehaviour
     public bool isDone()
     {
         return finished;
+    }
+
+    public EventType getType()
+    {
+        return eventType;
     }
 }

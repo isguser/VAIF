@@ -4,60 +4,42 @@ using UnityEngine;
 
 public class JumpManager : MonoBehaviour
 {
-    public int[] nextEventID;
     public List<EventIM> events = new List<EventIM>();
-    private List<GameObject> nextEvents = new List<GameObject>();
+    private List<EventIM> next = new List<EventIM>();
 
     private string TAG = "JM";
 
     /** nextEvents stores each event's nextEvent (GameObject)
-     * CONVENTION: -1 means there is no next event */
+     * CONVENTION: null means there is no next specified 'next' */
 
     public JumpManager(List<EventIM> e)
     {
+        Debug.Log(TAG + " breh");
+        load(e);
+        Debug.Log(TAG + " wut");
+    }
+
+    public void load(List<EventIM> e)
+    {
         events = e;
-        nextEventID = new int[e.Count];
+        Debug.Log(TAG + " maybe");
         init();
     }
 
-    private void init()
-    {
-        for (int i = 0; i < events.Count; i++)
-        {
-            //get this event's nextEvent, if any
-            if (events[i].nextEvent == null)
-            {
-                if (i == events.Count - 1)
-                    nextEventID[i] = -1; //last event has no jump
-                else
-                    nextEventID[i] = i + 1; //not last event, so move linearly in list
-            }
-            else
-            {
-                nextEvents.Add(events[i].nextEvent);
-                //save this nextEvent's EventID
-                nextEventID[i] = indexOf(nextEvents[i]);
-            }
+    private void init() {
+        //get each event's nextEvent GameObject, if any
+        for (int i = 0; i < events.Count; i++) {
+            Debug.Log(TAG + " this" + events[i].name);
         }
     }
 
-    private int indexOf(GameObject e)
+    public EventIM getNextEvent(EventIM e)
     {
-        if (e == null || e.GetComponent<EventIM>() == null)
-            return -1; //no nextEvent or not a type of EventIM
+        //return e's nextEvent
         for (int i = 0; i < events.Count; i++)
-            if (events[i] == e.GetComponent<EventIM>())
-                return i;
-        return -1; //not found
-    }
-
-    public int getNextEventIndex(EventIM e)
-    {
-        //Debug.Log(TAG + " Finding nextEvent for: " + e.name);
-        //return e's nextEventID
-        for (int i = 0; i < events.Count; i++)
-            if (events[i] == e)
-                return nextEventID[i];
-        return -1; //likely unreachable
+            if ( events[i]==e )
+                return next[i];
+        Debug.Log(TAG + " no next event: " + e.name);
+        return null; //likely unreachable
     }
 }

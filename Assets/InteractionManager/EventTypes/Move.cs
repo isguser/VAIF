@@ -9,4 +9,5 @@ public class Move : EventIM
     public float speed = 1;
     [Tooltip("Mandatory. Follow the object if the target moves.")]
     public bool follow = false;
+    //protected EventType eventType = EventType.Move;
 }

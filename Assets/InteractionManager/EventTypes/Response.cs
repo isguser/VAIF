@@ -19,4 +19,5 @@ public class Response : EventIM
     public GameObject missrecognitions;
     [Tooltip("Optional. Jump point after a specified set of missrecogntions.")]
     public string baseCaseJumpID;
+    //protected EventType eventType = EventType.Response;
 }

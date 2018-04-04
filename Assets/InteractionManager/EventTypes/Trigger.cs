@@ -9,6 +9,7 @@ public class Trigger : EventIM
     [Tooltip("Optional. If your method has parameters, you can specify them here. Your method might need to typecast" +
         "the strings in this array to handle other types.")]
     public string [] parameters;
+    //protected EventType eventType = EventType.Trigger;
     /*
     [Tooltip("Mandatory. Game Object, dragged from the scene hierarchy of the object that contains the component and the method" +
         "you want to trigger.")]

@@ -11,4 +11,5 @@ public class Dialog : EventIM
     [Tooltip("Optional. When not null, this defines the event into which the character jumps if it is interrupted. " +
         "If not set, you cannot interrupt the agent during this dialog.")]
     public string bargeIn;
+    //protected EventType eventType = EventType.Dialog;
 }

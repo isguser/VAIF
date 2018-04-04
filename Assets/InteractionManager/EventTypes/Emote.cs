@@ -6,4 +6,5 @@ public class Emote : EventIM
     public string emotion;
     [Tooltip("Mandatory. Show the blendshape of the emotion at this value.")]
     public float emotionalValue;
+    //protected EventType eventType = EventType.Emote;
 }

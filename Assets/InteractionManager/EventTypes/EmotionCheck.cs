@@ -10,4 +10,5 @@ public class EmotionCheck : EventIM
     public float lessThan;
     [Tooltip("Mandatory. Jump here. For equality checks write the same value in the previous fields.")]
     public string jumpID;
+    //protected EventType eventType = EventType.EmotionCheck;
 }

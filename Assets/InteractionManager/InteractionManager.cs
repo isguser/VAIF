@@ -3,8 +3,9 @@ using UnityEngine;
 using System.Linq;
 
 /*
- * -------------------------------------------------------------------------------------------------------------------------------
- * States: dialog, animations, responses, triggers, gaze, emotions, dialog memory, environmental memory, agent memory, permanent memory, lookat
+ * --------------------------------------------------------------------------------
+ * States: dialog, animations, responses, triggers, gaze, emotions, dialog memory,
+ *      environmental memory, agent memory, permanent memory, lookat
  * TODO dialog memory: remembers where the player left off with the agent
  * TODO environmental memory: agents can remember what they saw or heard you do
  * TODO update the dictation to store what the player said
@@ -16,13 +17,13 @@ using System.Linq;
  * TODO default dialog cases for misunderstandings or misrecognitions
  * TODO agent memory: agents can remember other interactions with agents
  * TODO set initial personality, could be used to weight emotions or alter prosody
- * -------------------------------------------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------
  * INTERNAL FUNCTIONS
  * save/load
  * continue interaction when approaching same character
  * add internal ID as states are being added (numerical index)
  * proximity check (3 types: passing, arriving, interacting, leaving)
- * -------------------------------------------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------
  * OTHER
  * multiplayer VR network
  * Player to Player interaction
@@ -33,7 +34,6 @@ public class InteractionManager : MonoBehaviour
     //public AnimationManager animations;
     public GameObject eventIndex; //Used for jumps
     public AgentStatusManager[] agents;
-    protected int eventID; //Internal ID
     private string TAG = "IM";
 
     protected bool matches = false;
@@ -41,6 +41,7 @@ public class InteractionManager : MonoBehaviour
     public List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
     public List<EventIM> convoEvents = new List<EventIM>();
+    private EventIM lastPlayed;
 
     protected EventSettingValue esv; //state comparisons to GUI
     protected DialogManager dm;
@@ -53,8 +54,9 @@ public class InteractionManager : MonoBehaviour
     protected EmoteManager em;
     protected MemoryCheckManager mcm;
     protected AgentStatusManager sm;
-    protected JumpManager jm;
     protected ConversationManager cm;
+
+    private Conversation conversation;
 
     private void Start() {
         dm = new DialogManager();
@@ -76,39 +78,56 @@ public class InteractionManager : MonoBehaviour
         wwm = gameObject.GetComponent<WaitManager>();
         mcm = gameObject.GetComponent<MemoryCheckManager>();
         cm = gameObject.GetComponent<ConversationManager>();
-        foreach (Transform child in transform)
-            events.Add(child.GetComponentInChildren<EventIM>());
 
-        jm = new JumpManager(events); //fixme: this JM handles next eventID value
+        conversation = cm.conversations.ElementAt(0);
     }
 
     private void Update() {
-        EventIM e = events.ElementAt(eventID);
-        if ( eventInBounds() && canStartEvent(e) ) {
-            if (!cm.activateConversation || cm.inConversation())
+        EventIM e;
+        //find the first Conversation to play this game
+        foreach ( Conversation c in cm.conversations ) {
+            Debug.Log(TAG + " anything?");
+            //is the Conversation complete?
+            if ( c.isOver() ) {
+                c.finish();
+                continue;
+            }
+            conversation = c;
+            //get the next event to run in this Conversation
+            e = c.findNextEvent(lastPlayed);
+            //e = c.getFirstUnfinishedEvent();
+            //is another event running?
+            if ( !canStartEvent(e) )
+                return; //wait til the next frame
+            //if the conditions match, run this Conversation
+            if ( getState(c)==getState(e) && canStartEvent(e) ) {
+                lastPlayed = e; //this is event is the most recently played
+                //move to the next Conversation
                 RunGame(e);
-            else
-                conversationCheck(); //If we are also not in a current conversation else runGame (Normally)
+                return;
+            }
+            //is the event done?
+            if ( e.isDone() )
+                done(e);
         }
-        if ( e.isDone() ) //if event finished in this frame
-            done(e);
     }
 
     public void RunGame(EventIM e) {
-        if ( cm.activateConversation )
-            e = convoEvents.ElementAt(eventID);
         if ( e.name!="Trigger" )
             sm = e.agent.GetComponent<AgentStatusManager>();
         matches = getState(e);
-        if ( ( matches && !speaking() ) || e.name == "Trigger" ) {
-            memories.Add(eventIndex);
-            Debug.Log(TAG + " Playing event " + e.name + " at index " + eventID);
-            switch (e.name) {
+        if ( ( matches && !speaking() ) || e.name == "Trigger") {
+            //memories.Add(eventIndex);
+            Debug.Log(TAG + " Playing Conversation/Event: " + conversation.name + "/" + e.name);
+            switch ( e.name ) {
                 case "Dialog":
                     dm = e.agent.GetComponent<DialogManager>();
                     dm.Speak(e.GetComponent<Dialog>());
                     break;
-                case "Animation":  //Animation needs to be fixed.. dialog will not play if 105 conditions not met but animation will play..
+                case "Animation":
+                    //Animation needs to be fixed...
+                    //dialog will not play if 105 conditions not met
+                    //but animation will play...
                     am = e.agent.GetComponent<AnimationManager>();
                     am.PlayAnimation(e.GetComponent<Animate>());
                     break;
@@ -191,7 +210,17 @@ public class InteractionManager : MonoBehaviour
         return esv.checkStateMatch(sm.currentState());
     }
 
+    private bool getState(Conversation e) {
+        //grabbing author choices from UNITY
+        esv.setLookedAt(e.wantLookedAt);
+        esv.setInRange(e.wantInRange);
+        //storing the current state of the user
+        esv.setVerbals(sm.getVerbalState());
+        return esv.checkStateMatch(sm.currentState());
+    }
+
     private bool speaking() {
+        //check if any agent is speaking
         foreach (AgentStatusManager A in agents)
             if (A.isSpeaking())
                 return true;
@@ -205,45 +234,15 @@ public class InteractionManager : MonoBehaviour
         sm.stopSpeaking();
         esv.reset();
         e.finish();
-        //eventID++;
-        eventID = jm.getNextEventIndex(e);
-    }
-
-    public void conversationCheck() {
-        foreach (EventIM e in events) {
-            /** Note: In editor, Conversation script needs to be first in order
-             * for IM to refrence conversation agent and not the agent in EventIM **/
-            if (e.hasStarted() && !e.isDone()) //waiting
-                return;
-            if (e.name != "Trigger")
-                sm = e.agent.GetComponent<AgentStatusManager>();
-            matches = getState(e); //check the conversation state
-            if ((matches && !speaking()) || e.name == "Trigger") //check if anybody is speaking in the scene
-            {
-                //memories.Add(eventIndex);
-                Debug.Log(TAG + " Conversation playing: " + e.name);
-                /**if its a conversation then play the first event of that conversation and continue with rungame? 
-                 * (w/ the rest of the conversation events while conversation state parameters still true).
-                 * conversationCheck will always be checking if any other event has been triggered.. **/
-                convoEvents = cm.grabConversationEvents(e);
-                e.start();
-                RunGame(e);
-            }
-        }
-    }
-
-    private bool eventInBounds() {
-        return ( eventID<events.Count && eventID>=0 );
     }
 
     private bool canStartEvent(EventIM e) {
-        foreach ( EventIM t in events )
-            if ( t.hasStarted() && !t.isDone() )
-                return false; //some event is in progress
-        return (!sm.isWaiting() && !e.hasStarted() && !e.isDone()); //event hasn't yet started
+        //has e started, or can it?
+        return (!sm.isWaiting() && !e.hasStarted() && !e.isDone());
     }
 
-    private bool eventIsConversational(EventIM e) { 
+    private bool eventIsConversational(EventIM e) {
+        //of what type is the conversation?
         switch ( e.name ) {
             case "Dialog":
             case "Response":

@@ -7,4 +7,5 @@ public class RotateTo : EventIM
     /// </summary>
     [Tooltip("Mandatory. Rotate the agent's body to look at this object.")]
     public GameObject rotateToObject;
+    //protected EventType eventType = EventType.RotateTo;
 }

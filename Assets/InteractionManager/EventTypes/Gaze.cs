@@ -12,4 +12,5 @@ public class Gaze : EventIM
     public float timeout;
     [Tooltip("Optional. If selected, it overrides all other options and turns default random gaze movement.")]
     public bool randomGaze;
+    //protected EventType eventType = EventType.Gaze;
 }

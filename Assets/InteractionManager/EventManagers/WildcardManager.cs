@@ -3,7 +3,7 @@ using UnityEngine.Windows.Speech;
 
 public class WildcardManager : MonoBehaviour
 {
-    DictationRecognizer dictationRecognizer;
+    private DictationRecognizer dictationRecognizer;
     protected Wildcard wild;
     private GameObject jumpToEvent;
 
@@ -27,21 +27,25 @@ public class WildcardManager : MonoBehaviour
 
         dictationRecognizer.DictationResult += (text, confidence) =>
         {
-            if (wild.annotation)
-            {
-                Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
-                wild.finish();
-            }
+            Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
+            wild.finish();
         };
     }
 
-    private void DictationRecognizer_DictationComplete(DictationCompletionCause cause)
-    {
+    private void DictationRecognizer_DictationComplete(DictationCompletionCause cause) {
         wild.finish();
-        Debug.Log(TAG + " Response jump to: " + wild.wildcardJumpID);
+        //Debug.Log(TAG + " Response jump to: " + wild.wildcardJumpID);
         jumpToEvent = wild.wildcardJumpID;
         dictationRecognizer.DictationComplete -= DictationRecognizer_DictationComplete;
         dictationRecognizer.Dispose();
+
+        Debug.Log(TAG + " Dictation complete: " + cause);
+
+        dictationRecognizer.DictationResult += (text, confidence) =>
+        {
+            Debug.Log(TAG + " Dictation result: " + text + " @confidence= " + confidence);
+            wild.finish();
+        };
     }
 
     public bool isRunning()

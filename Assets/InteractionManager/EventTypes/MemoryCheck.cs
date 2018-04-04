@@ -12,4 +12,5 @@ public class MemoryCheck : EventIM
     public bool recall;
     //[Tooltip("Optional. Check this box to trigger interaction functionality.")]
     //public bool triggerInteraction;
+    //protected EventType eventType = EventType.MemoryCheck;
 }

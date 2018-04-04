@@ -12,4 +12,5 @@ public class Wildcard : EventIM
     public float timeout;
     [Tooltip("Optional. Annotate whatever is picked up by the dictation software.")]
     public bool annotation = false;
+    //protected EventType eventType = EventType.Wildcard;
 }
