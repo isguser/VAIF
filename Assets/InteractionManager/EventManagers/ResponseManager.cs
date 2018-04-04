@@ -220,7 +220,7 @@ public class ResponseManager : MonoBehaviour
 
     private void buildAffirmations()
     {
-        if (affirmation.Contains("yeah")) //first item
+        if (affirmation.Contains("uh huh")) //last item
             return; //no duplicates
         affirmation.Add("yeah");
         affirmation.Add("yup");
@@ -234,7 +234,7 @@ public class ResponseManager : MonoBehaviour
 
     private void buildNegations()
     {
-        if (negation.Contains("nah")) //first item
+        if (negation.Contains("no, thanks")) //last item
             return; //no duplicates
         negation.Add("nah");
         negation.Add("nope");
@@ -245,7 +245,7 @@ public class ResponseManager : MonoBehaviour
 
     private void buildUnsure()
     {
-        if (unsure.Contains("i'm unsure")) //first item
+        if (unsure.Contains("i guess")) //last item
             return; //no duplicates
         unsure.Add("i'm unsure");
         unsure.Add("i'm not sure");

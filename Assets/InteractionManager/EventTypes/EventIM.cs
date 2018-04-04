@@ -3,7 +3,7 @@
 public class EventIM : MonoBehaviour
 {
 
-    [Tooltip("Default. The nextEvent is how you can access different events through Jump events in the Interaction Manager. It is also" +
+    [Tooltip("Required. The nextEvent is the nextEvent in the Timeline to be played after this event. It is also" +
         "used in timeouts and parameters as jumps from other events.")]
     public GameObject nextEvent;
     [Tooltip("Optional. The IDescription is how you can describe your events with a simple description ID. EX: Dialog1")]
@@ -13,6 +13,8 @@ public class EventIM : MonoBehaviour
     public EventSetting wantInRange;
     [Tooltip("Required. Do you want the user to look at the agent to activate this event? DONTCARE allows this event to begin without necessity.")]
     public EventSetting wantLookedAt;
+    [Tooltip("Mandatory. Mark this event as the last in the Conversation.")]
+    public bool isLastEvent;
     public enum EventSetting
     {
         DONTCARE, //can be T/F

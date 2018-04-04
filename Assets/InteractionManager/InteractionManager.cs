@@ -79,8 +79,12 @@ public class InteractionManager : MonoBehaviour
     }
 
     private void Update() {
+        //if we're waiting on a response
         if ( lastPlayed!=null && eventNeedsResponse(lastPlayed) && lastPlayed.nextEvent==null )
             return;
+        //is another event running?
+        if ( lastPlayed!=null && !lastPlayed.isDone() )
+            return; //wait til the next frame
         EventIM e;
         //find the first Conversation to play this game
         foreach ( Conversation c in cm.conversations ) {

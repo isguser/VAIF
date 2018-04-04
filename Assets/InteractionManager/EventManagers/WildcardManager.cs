@@ -5,7 +5,6 @@ public class WildcardManager : MonoBehaviour
 {
     private DictationRecognizer dictationRecognizer;
     protected Wildcard wild;
-    private GameObject jumpToEvent;
 
     private string TAG = "WM";
 
@@ -14,7 +13,6 @@ public class WildcardManager : MonoBehaviour
 
     public void Wildcard(Wildcard wildcard)
     {
-        jumpToEvent = null;
         wild = wildcard;
         wild.start();
         Debug.Log(TAG + " Recognizing...");
@@ -57,17 +55,9 @@ public class WildcardManager : MonoBehaviour
 
     public void stop()
     {
-        if (wild != null)
-        {
-            wild.nextEvent = jumpToEvent;
+        if ( wild!=null )
             wild.finish();
-        }
         if ( dictationRecognizer!=null )
             dictationRecognizer.Stop();
-    }
-
-    public GameObject getJumpEvent()
-    {
-        return jumpToEvent;
     }
 }

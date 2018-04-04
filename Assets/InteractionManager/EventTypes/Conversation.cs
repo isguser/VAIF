@@ -24,13 +24,14 @@ public class Conversation : EventIM
     {
         /* Verify if all events in this Conversation are started and done */
         foreach ( EventIM e in events )
-            if ( !e.isDone() )
-                return false;
-        return true;
+            if ( e.isLastEvent && e.isDone() )
+                return true;
+        return false;
     }
 
     public bool isTheLastEvent(EventIM e) {
-        return ( e==events[events.Count-1] ); //todo -- it can have a jump?
+        //return ( e==events[events.Count-1] ); //todo -- it can have a jump?
+        return e.isLastEvent;
     }
 
     public List<EventIM> getEvents()
