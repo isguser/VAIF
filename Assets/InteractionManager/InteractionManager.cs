@@ -86,7 +86,7 @@ public class InteractionManager : MonoBehaviour
         EventIM e;
         //find the first Conversation to play this game
         foreach ( Conversation c in cm.conversations ) {
-            Debug.Log(TAG + " anything?");
+            //Debug.Log(TAG + " anything?");
             //is the Conversation complete?
             if ( c.isOver() ) {
                 c.finish();
@@ -94,8 +94,8 @@ public class InteractionManager : MonoBehaviour
             }
             conversation = c;
             //get the next event to run in this Conversation
-            e = c.findNextEvent(lastPlayed);
-            //e = c.getFirstUnfinishedEvent();
+            //e = c.findNextEvent(lastPlayed);
+            e = c.getFirstUnfinishedEvent();
             //is another event running?
             if ( !canStartEvent(e) )
                 return; //wait til the next frame
