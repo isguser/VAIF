@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ConversationManager : MonoBehaviour {
-    [Tooltip("Optional. Activate Conversation allows the user to enter different conversations.")]
-    public bool activateConversation;
-    [Tooltip("Optional. Jump to which Conversation once this Conversation completes.")]
-    public GameObject[] conversationsNeededAfterThis;
-    [Tooltip("Optional. Jump to which Conversation before beginning this Conversation.")]
-    public GameObject[] conversationsNeededBeforeThis;
-    public List<EventIM> firsts;
+    //[Tooltip("Optional. Activate Conversation allows the user to enter different conversations.")]
+    //public bool activateConversation;
+    //[Tooltip("Optional. Jump to which Conversation once this Conversation completes.")]
+    //public GameObject[] conversationsNeededAfterThis;
+    //[Tooltip("Optional. Jump to which Conversation before beginning this Conversation.")]
+    //public GameObject[] conversationsNeededBeforeThis;
+    private List<EventIM> firsts;
     public Conversation[] conversations; //The amount of conversations to track must be added in editor
 
     private string TAG = "CM";

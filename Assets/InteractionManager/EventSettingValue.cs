@@ -7,11 +7,12 @@ public class EventSettingValue : MonoBehaviour
     private bool[] want = new bool[] { false, false };
     private bool[] dontcare = new bool[] { false, false };
     private bool[] doingVerbals = new bool[] { false, false };
+    private bool[] have;
     private string TAG = "ESM";
 
     /** CONVENTION
-     * want[0], dontcare[0] hold the inRange EventSetting
-     * want[1], dontcare[1] hold the isLookedAt EventSetting
+     * want[0], dontcare[0], have[0] hold the isLookedAt EventSetting
+     * want[1], dontcare[1], have[1] hold the inRange EventSetting
      * doingVerbals[0] holds the speaking state 
      * doingVerbals[1] holds the listening state */
 
@@ -21,24 +22,7 @@ public class EventSettingValue : MonoBehaviour
     }
 
 
-    public void setInRange(EventIM.EventSetting w)
-    {
-        //store what the author wants
-        switch (w)
-        {
-            case (EventIM.EventSetting.TRUE):
-                want[0] = true;
-                break;
-            case (EventIM.EventSetting.FALSE):
-                want[0] = false;
-                break;
-            case (EventIM.EventSetting.DONTCARE):
-                dontcare[0] = true;
-                break;
-        }
-    }
-
-    public void setLookedAt(EventIM.EventSetting w)
+    public void setWantRange(EventIM.EventSetting w)
     {
         //store what the author wants
         switch (w)
@@ -55,19 +39,43 @@ public class EventSettingValue : MonoBehaviour
         }
     }
 
-    public void setVerbals(bool[] sysState)
+    public void setWantLookedAt(EventIM.EventSetting w)
+    {
+        //store what the author wants
+        switch (w)
+        {
+            case (EventIM.EventSetting.TRUE):
+                want[0] = true;
+                break;
+            case (EventIM.EventSetting.FALSE):
+                want[0] = false;
+                break;
+            case (EventIM.EventSetting.DONTCARE):
+                dontcare[0] = true;
+                break;
+        }
+    }
+
+    public void setCurrVerbals(bool[] sysState)
     {
         //store the current verbal state of the system
         doingVerbals[0] = sysState[0];
         doingVerbals[1] = sysState[1];
     }
 
-    public bool checkStateMatch(bool[] have)
+    public void setCurrPhysical(bool[] sysState)
+    {
+        //store the current physical state of the system
+        have = sysState;
+    }
+
+    public bool checkStateMatch()
     {
         /** Returns TRUE if the agent is neither talking/listening, AND we have what we want in:
           * isLookedAt
           * isInRange
           */
+        //debugMe();
         if (have.Length != want.Length)
             return false; //mismatched sizes
         if (talkingOrListening())
@@ -89,7 +97,7 @@ public class EventSettingValue : MonoBehaviour
         return false;
     }
 
-    private void debugMe(bool[] have)
+    private void debugMe()
     {
         //This code is for testing purposes only
         for (int i = 0; i < want.Length; i++)

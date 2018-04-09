@@ -3,7 +3,7 @@
 public class MemoryCheckManager : MonoBehaviour
 {
 
-    protected InteractionManager interactionManager;
+    //protected InteractionManager interactionManager;
     protected bool currentMemories = true;
     protected MemoryCheck memories;
 
@@ -19,7 +19,7 @@ public class MemoryCheckManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        interactionManager = FindObjectOfType<InteractionManager>();
+        //interactionManager = FindObjectOfType<InteractionManager>();
     }
 
     public void CheckMemories(MemoryCheck memories)
@@ -41,12 +41,12 @@ public class MemoryCheckManager : MonoBehaviour
         foreach (GameObject m in memories.memoriesToCheck)
         {
             Debug.Log("MEMORY CHECK: " + m);
-            if (!interactionManager.memories.Contains(m))
-            {
+            //if (!interactionManager.memories.Contains(m))
+            //{
                 Debug.Log("Memory " + m + " not found");
                 memories.finish();
                 return false;
-            }
+            //}
         }
         memories.finish();
         return true;

@@ -40,8 +40,8 @@ public class ResponseManager : MonoBehaviour
     KeywordRecognizer keywordRecognizer;
     Dictionary<string, Action> keywordDictionary = new Dictionary<string, Action>();
     List<GrammarMapper> gMapper = new List<GrammarMapper>();
-    public AgentStatusManager agentStatus;
-    public InteractionManager interactionManager;
+    private AgentStatusManager agentStatus;
+    //private InteractionManager interactionManager;
 
     Response response;
     private List<String> repetition = new List<String>();
@@ -55,7 +55,7 @@ public class ResponseManager : MonoBehaviour
 
     void Start()
     {
-        interactionManager = gameObject.GetComponent<InteractionManager>();
+        //interactionManager = gameObject.GetComponent<InteractionManager>();
     }
 
     public void Respond(Response r)

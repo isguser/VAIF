@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class AgentStatusManager : MonoBehaviour
 {
@@ -8,17 +9,17 @@ public class AgentStatusManager : MonoBehaviour
     public bool inRange;
     public bool moving;
     public bool lookedAt;
-    private static int properties = 6;
-    private static bool[] state = new bool[properties];
-    private static string[] stateName = new string[properties];
-    private static string LISTEN = "listen";
-    private static string SPEAK = "speak";
-    private static string WAIT = "wait";
-    private static string INRANGE = "inRange";
-    private static string MOVE = "move";
-    private static string LOOKAT = "lookAt";
+    private int properties = 6;
+    private bool[] state;// = new bool[properties];
+    private string[] stateName;// = new string[properties];
+    private string LISTEN = "listen";
+    private string SPEAK = "speak";
+    private string WAIT = "wait";
+    private string INRANGE = "inRange";
+    private string MOVE = "move";
+    private string LOOKAT = "lookAt";
 
-    private string TAG = "ASM";
+    private string TAG = "ASM ";
 
     // Use this for initialization
     void Start()
@@ -85,13 +86,12 @@ public class AgentStatusManager : MonoBehaviour
         moving = true;
     }
 
-    public void movedNearby()
-    {
-        state[stateOf(INRANGE)] = true;
-        inRange = true;
+    public void startInRange() {
+        this.state[stateOf(INRANGE)] = true;
+        this.inRange = true;
     }
 
-    public void lookingAt()
+    public void startLookedAt()
     {
         state[stateOf(LOOKAT)] = true;
         lookedAt = true;
@@ -121,13 +121,13 @@ public class AgentStatusManager : MonoBehaviour
         moving = false;
     }
 
-    public void movedAway()
+    public void stopInRange()
     {
         state[stateOf(INRANGE)] = false;
         inRange = false;
     }
 
-    public void notLookingAt()
+    public void stopLookedAt()
     {
         state[stateOf(LOOKAT)] = false;
         lookedAt = false;
@@ -170,7 +170,7 @@ public class AgentStatusManager : MonoBehaviour
         return properties;
     }
 
-    public bool[] currentState()
+    public bool[] getPhysicalState()
     {
         return new bool[] { state[stateOf(LOOKAT)], state[stateOf(INRANGE)] };
     }

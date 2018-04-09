@@ -3,7 +3,7 @@
 public class EmoteManager : MonoBehaviour
 {
 
-    protected InteractionManager interactionManager;
+    //protected InteractionManager interactionManager;
     public SkinnedMeshRenderer emotionalFace;
     public Mesh blendshapeContainer;
 

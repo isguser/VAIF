@@ -31,15 +31,13 @@ using System.Linq;
 
 public class InteractionManager : MonoBehaviour
 {
-    public AgentStatusManager[] agents;
-    public List<GameObject> memories = new List<GameObject>();
+    public List<AgentStatusManager> agents = new List<AgentStatusManager>();
+    private List<GameObject> memories = new List<GameObject>();
     public List<EventIM> events = new List<EventIM>();
 
     private EventIM lastPlayed;
-    private string TAG = "IM";
-    protected bool matches = false;
-
-    protected EventSettingValue esv;
+    private string TAG = "IM ";
+    
     protected DialogManager dm;
     protected AnimationManager am;
     protected ResponseManager rm;
@@ -49,10 +47,7 @@ public class InteractionManager : MonoBehaviour
     protected MoveManager mm;
     protected EmoteManager em;
     protected MemoryCheckManager mcm;
-    protected AgentStatusManager sm;
     protected ConversationManager cm;
-
-    private Conversation conversation;
 
     private void Start() {
         dm = new DialogManager();
@@ -64,8 +59,6 @@ public class InteractionManager : MonoBehaviour
         mm = new MoveManager();
         em = new EmoteManager();
         mcm = new MemoryCheckManager();
-        sm = new AgentStatusManager();
-        esv = new EventSettingValue();
         cm = new ConversationManager();
 
         rm = gameObject.GetComponent<ResponseManager>();
@@ -74,8 +67,6 @@ public class InteractionManager : MonoBehaviour
         wwm = gameObject.GetComponent<WaitManager>();
         mcm = gameObject.GetComponent<MemoryCheckManager>();
         cm = gameObject.GetComponent<ConversationManager>();
-
-        conversation = cm.conversations.ElementAt(0);
     }
 
     private void Update() {
@@ -88,37 +79,41 @@ public class InteractionManager : MonoBehaviour
         EventIM e;
         //find the first Conversation to play this game
         foreach ( Conversation c in cm.conversations ) {
-            //is the Conversation complete?
+            //is the user in this Conversation?
+            if ( !getState(c) )
+                continue;
+            //is this Conversation complete?
             if ( c.isOver() ) {
+                Debug.Log(TAG + c.name + "is over");
                 c.finish();
                 continue;
             }
-            conversation = c;
             //get the next event to run in this Conversation
-            e = nextEvent();
+            e = nextEvent(c);
             //is another event running?
             if ( !canStartEvent(e) )
-                return; //wait til the next frame
+                return;
             //if the conditions match, run this Conversation
-            if ( getState(c)==getState(e) && canStartEvent(e) ) {
-                lastPlayed = e; //this is event is the most recently played
+            if ( getState(e) ) {
+                c.start();
+                lastPlayed = e; //this event is the most recently played
                 //move to the next Conversation
-                RunGame(e);
+                RunGame(c,e);
                 return;
             }
             //is the event done?
-            if ( e.isDone() )
+            if ( e.isDone() ) {
+                if ( e.name=="Response" )
+                    c.eventIsDone(e);
                 done(e);
+            }
         }
     }
 
-    public void RunGame(EventIM e) {
-        if ( e.name!="Trigger" )
-            sm = e.agent.GetComponent<AgentStatusManager>();
-        matches = getState(e);
-        if ( ( matches && !speaking() ) || e.name == "Trigger") {
+    public void RunGame(Conversation c, EventIM e) {
+        if ( ( getState(e) && !waitingOnVerbalEvent() ) || e.name == "Trigger") {
             //memories.Add(eventIndex);
-            Debug.Log(TAG + " Playing Conversation/Event: " + conversation.name + "/" + e.name);
+            Debug.Log(TAG + "Playing Conversation/Event: " + c.name + "/" + e.name);
             switch ( e.name ) {
                 case "Dialog":
                     dm = e.agent.GetComponent<DialogManager>();
@@ -171,84 +166,62 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    /* ********** Mutators: State Changes ********** */
-    public void startListening()
-    {
-        sm.startListening();
-    }
-    public void stopListening()
-    {
-        sm.stopListening();
-    }
-    public void startWaiting()
-    {
-        sm.startWaiting();
-    }
-    public void stopWaiting()
-    {
-        sm.stopWaiting();
-    }
-    public void startSpeaking()
-    {
-        sm.startSpeaking();
-    }
-    public void stopSpeaking(AgentStatusManager curAgent) {
-        if (curAgent.name == sm.name)
-            sm.stopSpeaking();
-        else
-            curAgent.stopSpeaking();
-    }
-
     /* ********** Accessors: State Changes ********** */
     private bool getState(EventIM e) {
+        EventSettingValue esv = new EventSettingValue();
+        AgentStatusManager tmp = e.agent.GetComponent<AgentStatusManager>();
         //grabbing author choices from UNITY
-        esv.setLookedAt(e.wantLookedAt);
-        esv.setInRange(e.wantInRange);
+        esv.setWantLookedAt(e.wantLookedAt);
+        esv.setWantLookedAt(e.wantInRange);
         //storing the current state of the user
-        esv.setVerbals(sm.getVerbalState());
-        return esv.checkStateMatch(sm.currentState());
+        esv.setCurrVerbals(tmp.getVerbalState());
+        esv.setCurrPhysical(tmp.getPhysicalState());
+        return esv.checkStateMatch();
     }
 
-    private bool getState(Conversation e) {
-        //grabbing author choices from UNITY
-        esv.setLookedAt(e.wantLookedAt);
-        esv.setInRange(e.wantInRange);
-        //storing the current state of the user
-        esv.setVerbals(sm.getVerbalState());
-        return esv.checkStateMatch(sm.currentState());
+    private bool getState(Conversation c) {
+        ConversationSettingValue csv = new ConversationSettingValue(c.agents.Count);
+        //start Conv c if: we're inRange of ANY agent AND we're lookAt ANY agent
+        csv.setWantLookedAt(c.wantLookedAt);
+        csv.setWantInRange(c.wantInRange);
+        csv.setCurrPhysical(c.agents);
+        return csv.checkStateMatch();
     }
 
-    private bool speaking() {
+    private bool waitingOnVerbalEvent() {
         //check if any agent is speaking
-        foreach (AgentStatusManager A in agents)
-            if (A.isSpeaking())
+        foreach (AgentStatusManager a in agents)
+        {
+            //Debug.Log(TAG + " " + a.name + " lookedat/inrange: " + a.isLookedAt() + a.isInRange());
+            if (a.isSpeaking() || a.isListening())
                 return true;
+        }
         return false;
     }
 
     /* ********** Mutators: Event Sequence Behavior ********** */
     private void done(EventIM e)
     {
-        Debug.Log(TAG + " Finished Event " + e.name);
-        sm.stopSpeaking();
-        esv.reset();
+        if (e.nextEvent != null && e.nextEvent.name == "Response")
+            return; //wait until the response is complete to mark this event as done
+        Debug.Log(TAG + "Finished Event " + e.name);
         e.finish();
     }
 
     private bool canStartEvent(EventIM e) {
         //has e started, or can it?
-        return (!sm.isWaiting() && !e.hasStarted() && !e.isDone());
+        return ( !e.hasStarted() && !e.isDone() );
     }
 
-    private EventIM nextEvent()
+    private EventIM nextEvent(Conversation c)
     {
         //start if we have not played any yet
         if (lastPlayed == null)
-            return conversation.getFirstUnfinishedEvent();
+            return c.getFirstUnfinishedEvent();
         //if the event is conversational, it had multiple nextEvent possibilities
         if ( eventNeedsResponse(lastPlayed) )
             return lastPlayed.nextEvent.GetComponent<EventIM>();
-        return conversation.findNextEvent(lastPlayed);
+        return c.findNextEvent(lastPlayed);
     }
 
     private bool eventIsConversational(EventIM e) {

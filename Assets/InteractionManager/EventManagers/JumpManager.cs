@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class JumpManager : MonoBehaviour
 {
-    public List<EventIM> events = new List<EventIM>();
+    private List<EventIM> events = new List<EventIM>();
     private List<EventIM> next = new List<EventIM>();
 
     private string TAG = "JM";

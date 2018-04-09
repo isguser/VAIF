@@ -2,7 +2,6 @@
 
 public class EventIM : MonoBehaviour
 {
-
     [Tooltip("Required. The nextEvent is the nextEvent in the Timeline to be played after this event. It is also" +
         "used in timeouts and parameters as jumps from other events.")]
     public GameObject nextEvent;
@@ -17,28 +16,28 @@ public class EventIM : MonoBehaviour
     public bool isLastEvent;
     public enum EventSetting
     {
-        DONTCARE, //can be T/F
         TRUE,
+        DONTCARE, //can be T/F
         FALSE
     }
     protected EventSetting eventSetting;
     public enum EventType
     {
         Conversation,
-        Dialog,
         Animation,
-        Response,
-        Wildcard,
-        Trigger,
-        Gaze,
-        Jump,
-        Wait,
-        RotateTo,
+        Dialog,
         Emote,
         EmotionCheck,
+        Gaze,
+        Jump,
         MemoryCheck,
         Move,
-        StopMoving
+        Response,
+        RotateTo,
+        StopMoving,
+        Trigger,
+        Wait,
+        Wildcard
     }
     protected EventType eventType;
     public bool started = false;
@@ -53,9 +52,6 @@ public class EventIM : MonoBehaviour
                 conversation.AddComponent<Conversation>();
                 conversation.AddComponent<JumpManager>();
                 conversation.AddComponent<EventIM>();
-                conversation.GetComponent<Conversation>().agent = agent;
-                conversation.GetComponent<Conversation>().nextEvent = nextEvent;
-                conversation.GetComponent<Conversation>().wantInRange = wantInRange;
                 eventType = EventType.Conversation;
                 SetParent(conversation);
                 break;
