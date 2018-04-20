@@ -21,8 +21,8 @@ public class DialogManager : MonoBehaviour
             dialogs.Add(a);
     }
 
-    public void Speak(Dialog d)
-    {
+    /* Run the audio clip (start speaking). */
+    public void Speak(Dialog d) {
         dialog = d;
         dialog.start();
         //source.Stop();
@@ -47,6 +47,7 @@ public class DialogManager : MonoBehaviour
         }
     }
 
+    /* End the audio clip (stop speaking). */
     void NotSpeaking()
     {
         Debug.Log(TAG + " Finished Dialog: " + currentDialog.name + ", length: " + source.clip.length);

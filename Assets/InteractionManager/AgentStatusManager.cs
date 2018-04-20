@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class AgentStatusManager : MonoBehaviour
-{
+public class AgentStatusManager : MonoBehaviour {
+    [Tooltip("No action needed. Checked if this agent is speaking.")]
     public bool speaking;
+    [Tooltip("No action needed. Checked if this agent is listening (expecting a response from the user).")]
     public bool listening;
+    [Tooltip("No action needed. Checked if this agent is waiting on some action/event.")]
     public bool waiting;
+    [Tooltip("No action needed. Checked if the user is nearby this agent.")]
     public bool inRange;
+    [Tooltip("No action needed. Checked if the agent is performing a Moving event.")]
     public bool moving;
+    [Tooltip("No action needed. Checked if the user is looking at this agent.")]
     public bool lookedAt;
     private int properties = 6;
     private bool[] state;// = new bool[properties];

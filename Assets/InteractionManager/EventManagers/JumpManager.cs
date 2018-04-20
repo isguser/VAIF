@@ -14,12 +14,15 @@ public class JumpManager : MonoBehaviour
 
     public JumpManager() { }
 
+
+    /* Store the events. */
     public void load(List<EventIM> e)
     {
         events = e;
         init();
     }
 
+    /* Access each event's nextEvent to play next. */
     private void init() {
         //get each event's nextEvent GameObject, if any
         for (int i = 0; i < events.Count; i++) {
@@ -30,6 +33,7 @@ public class JumpManager : MonoBehaviour
         }
     }
 
+    /* Get an event's nextEvent. */
     public EventIM getNextEvent(EventIM e)
     {
         //return e's nextEvent
@@ -40,6 +44,7 @@ public class JumpManager : MonoBehaviour
         return null; //likely unreachable
     }
 
+    /* Get the first event. */
     public EventIM getFirstEvent() {
         return events[0];
     }

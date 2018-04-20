@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class FollowCamera : MonoBehaviour {
-
+    /* This is to be attached to the VR's camera. The GameObject requires a Box Collider, and Meshed Filter. */
     public GameObject camera_Eye;
     private Vector3 followRotaion = new Vector3();
 
@@ -13,9 +13,9 @@ public class FollowCamera : MonoBehaviour {
         followRotaion.z = camera_Eye.transform.eulerAngles.x;
         transform.eulerAngles = followRotaion;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         transform.position = camera_Eye.transform.position;
         followRotaion.x = (camera_Eye.transform.eulerAngles.z - (camera_Eye.transform.eulerAngles.z * 2));
         followRotaion.y = camera_Eye.transform.eulerAngles.y;// + 90;

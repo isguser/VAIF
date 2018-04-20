@@ -8,6 +8,7 @@ public class LookAtCollision : MonoBehaviour
     protected GameObject camera_LookAt;
     string tagged = "Camera_LookAt";
 
+    /* What to do when we enter an agent's collider? */
     void OnTriggerEnter(Collider other)
     {
         camera_LookAt = other.gameObject; //this is the VR camera
@@ -18,6 +19,7 @@ public class LookAtCollision : MonoBehaviour
         }
     }
 
+    /* What to do when stop looking at an agent? */
     void OnTriggerExit(Collider other)
     {
         camera_LookAt = other.gameObject;
@@ -29,6 +31,7 @@ public class LookAtCollision : MonoBehaviour
         }
     }
 
+    /* What to do when we are looking at an agent? */
     void LookedAt()
     {
         if (this.gameObject.GetComponent<AgentStatusManager>().name == this.gameObject.name)

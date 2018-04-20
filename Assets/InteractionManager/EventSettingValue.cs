@@ -20,7 +20,7 @@ public class EventSettingValue : MonoBehaviour
         //don't care
     }
 
-
+    /* Given the set of want in range, store these conditions */
     public void setWantInRange(EventIM.EventSetting w)
     {
         //store what the author wants
@@ -38,6 +38,7 @@ public class EventSettingValue : MonoBehaviour
         }
     }
 
+    /* Given the set of want looked at, store these conditions */
     public void setWantLookedAt(EventIM.EventSetting w)
     {
         //store what the author wants
@@ -55,19 +56,19 @@ public class EventSettingValue : MonoBehaviour
         }
     }
 
-    
+    /* Given the set of current physical conditions of the agent */
     public void setCurrPhysical(bool[] sysState)
     {
         //store the current physical state of the system
         have = sysState;
     }
 
+    /** Returns TRUE if the agent is neither talking/listening, AND we have what we want in:
+      * isLookedAt
+      * isInRange
+      */
     public bool checkStateMatch()
     {
-        /** Returns TRUE if the agent is neither talking/listening, AND we have what we want in:
-          * isLookedAt
-          * isInRange
-          */
         //debugMe();
         if (have.Length != want.Length)
             return false; //mismatched sizes
@@ -80,6 +81,7 @@ public class EventSettingValue : MonoBehaviour
         return true;
     }
 
+    /* Reset the values for a new check */
     public void reset()
     {
         //reset for next event

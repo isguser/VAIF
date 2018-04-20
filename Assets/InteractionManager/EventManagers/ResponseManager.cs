@@ -55,6 +55,8 @@ public class ResponseManager : MonoBehaviour
 
     void Start() {  }
 
+
+    /* Agent will start listening for a response (starts recognition). */
     public void Respond(Response r)
     {
         response = r;
@@ -73,6 +75,7 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Add the list of responses (key phrases to recognize) */
     private void addResponses()
     {
         int id = 0;
@@ -93,6 +96,7 @@ public class ResponseManager : MonoBehaviour
         addRepeat();
     }
 
+    /* Add to the list of responses, request a replay of agent's last utterance */
     private void addRepeat()
     {
         //asking the agent similar 'what' responses incurs a repetition of current event
@@ -105,6 +109,7 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Add the list of responses (similar phrases to 'yes') */
     private void addAffirmations(int id)
     {
         foreach (string g in affirmation)
@@ -115,6 +120,7 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Add the list of responses (similar phrases to 'no') */
     private void addNegatives(int id)
     {
         foreach (string g in negation)
@@ -125,6 +131,7 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Add the list of responses (similar phrases to 'i don't know') */
     private void addUnsures(int id)
     {
         foreach (string g in unsure)
@@ -135,6 +142,7 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Set the timeout after an utterance is made by the user to stop listening. */
     protected bool ResponseTimeout()
     {
         //interactionManager.eventIndex = response.timeoutJumpID;
@@ -144,6 +152,7 @@ public class ResponseManager : MonoBehaviour
         return false;
     }
 
+    /* What to do when an utterance from the user is recognized. */
     private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
     {
         Action keywordAction;
@@ -173,11 +182,14 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Access the nextEvent when the response/recognition is successfully completed. */
     public EventIM getNextEvent()
     {
+        //we want to know which event to play next
         return nextEvent.GetComponent<EventIM>();
     }
 
+    /* Stop the recognizer to be able to run other events. (called on recognition) */
     public void stopKeywordRecognizer()
     {
         PhraseRecognitionSystem.Shutdown();
@@ -189,6 +201,7 @@ public class ResponseManager : MonoBehaviour
         }
     }
 
+    /* Check if this recognizer is running. */
     public bool isRunning()
     {
         if (keywordRecognizer != null)
@@ -196,6 +209,7 @@ public class ResponseManager : MonoBehaviour
         return false;
     }
 
+    /* *********** The list of possibile user-responses for 'repeats'. *********** */
     private void buildRepetitions()
     {
         repetition.Add("What");
@@ -217,6 +231,7 @@ public class ResponseManager : MonoBehaviour
         repetition.Add("Repeat what you just said");
     }
 
+    /* *********** The list of possibile user-responses for 'yes'. *********** */
     private void buildAffirmations()
     {
         affirmation.Add("yeah");
@@ -229,6 +244,7 @@ public class ResponseManager : MonoBehaviour
         affirmation.Add("uh huh");
     }
 
+    /* *********** The list of possibile user-responses for 'no'. *********** */
     private void buildNegations()
     {
         negation.Add("nah");
@@ -238,6 +254,7 @@ public class ResponseManager : MonoBehaviour
         negation.Add("no, thanks");
     }
 
+    /* *********** The list of possibile user-responses for 'i don't know'. *********** */
     private void buildUnsure()
     {
         unsure.Add("i'm unsure");

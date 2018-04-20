@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class AnimationManager : MonoBehaviour
 {
+    [Tooltip("Mandatory. The complete list of animations for this agent. Only these animations can be called in an event with this agent.")]
     public List<AnimationClip> animations = new List<AnimationClip>();
     protected Object[] assetAnimations;
 
@@ -29,7 +30,7 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
-
+    /* Start running the animation. */
     public void PlayAnimation(Animate anim)
     {
         animate = anim;
@@ -43,6 +44,7 @@ public class AnimationManager : MonoBehaviour
         Invoke("PlayAnimationDelayedTimeout", anim.delay);
     }
 
+    /* Play animation until timeout time from Unity. */
     public void PlayAnimationDelayedTimeout()
     {
         startAnimation = true;
@@ -52,6 +54,7 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
+    /* Called once on every frame */
     private void Update()
     {
         if (startAnimation)
@@ -78,6 +81,7 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
+    /* Search for the animation to play in this list of animations. */
     public int findAnimation(string animation)
     {
         int index = 0;
@@ -93,6 +97,7 @@ public class AnimationManager : MonoBehaviour
         return index;
     }
 
+    /* Replay the animation. */
     public void ReplayAnimation()
     {
         looping = true;
@@ -100,6 +105,7 @@ public class AnimationManager : MonoBehaviour
         animate.start();
     }
 
+    /* Stop playing the animation. */
     public void ToIdle()
     {
         Debug.Log(TAG + name + " finished playing.");

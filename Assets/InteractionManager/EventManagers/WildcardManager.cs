@@ -11,6 +11,7 @@ public class WildcardManager : MonoBehaviour
     // Use this for initialization
     void Start() { }
 
+    /* Start the recognizer for dictation events */
     public void Wildcard(Wildcard wildcard)
     {
         wild = wildcard;
@@ -27,6 +28,7 @@ public class WildcardManager : MonoBehaviour
         dictationRecognizer.Start();
     }
 
+    /* What to do on a recognized utterance from user */
     private void DictationRecognizer_DictationResult(string text, ConfidenceLevel conf)
     {
         //on a recognized dictation from user...
@@ -36,6 +38,7 @@ public class WildcardManager : MonoBehaviour
         Debug.Log(TAG + "Dictation result: " + text + " @confidence= " + conf);
     }
 
+    /* What to do while recognizing utterance from user */
     private void DictationRecognizer_DictationHypothesis(string text)
     {
         //on a guess dictation of user...
@@ -44,6 +47,7 @@ public class WildcardManager : MonoBehaviour
         //Debug.Log(TAG + "Dictation hypothesized: " + text);
     }
 
+    /* What to do when a recognition completes (also by timeout) */
     private void DictationRecognizer_DictationComplete(DictationCompletionCause cause)
     {
         //on any cause for completion...
@@ -53,11 +57,13 @@ public class WildcardManager : MonoBehaviour
         Debug.Log(TAG + "Dictation complete: " + cause);
     }
 
+    /* Check if this recognizer is active. */
     public bool isRunning()
     {
         return ( dictationRecognizer!=null || (dictationRecognizer.Status == SpeechSystemStatus.Running));
     }
 
+    /* Stop this recognizer. */
     public void stop()
     {
         if ( wild!=null )

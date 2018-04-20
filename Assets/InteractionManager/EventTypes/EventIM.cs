@@ -14,15 +14,14 @@ public class EventIM : MonoBehaviour
     public EventSetting wantLookedAt;
     [Tooltip("Mandatory. Mark this event as the last in the Conversation.")]
     public bool isLastEvent;
-    public enum EventSetting
-    {
+    public enum EventSetting {
         TRUE,
         DONTCARE, //can be T/F
         FALSE
     }
     protected EventSetting eventSetting;
-    public enum EventType
-    {
+
+    public enum EventType {
         Conversation,
         Animation,
         Dialog,
@@ -40,12 +39,12 @@ public class EventIM : MonoBehaviour
         Wildcard
     }
     protected EventType eventType;
+
     public bool started = false;
     public bool finished = false;
 
     public void AddEvent(string type) {
-        switch (type)
-        {
+        switch (type) {
             case "Conversation":
                 GameObject conversation = new GameObject();
                 conversation.name = "Conversation";

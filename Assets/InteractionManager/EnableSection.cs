@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnableSection : EventIM
 {
-    [Tooltip("Mandatory. Event ID where system will jump to")]
+    [Tooltip("Mandatory. Event ID where system will jump to. WORK IN PROGRESS")]
     public int jumpID;
     [Tooltip("Optional. Name of the audio file that you want to play, case sensitive.")]
     public bool toChange;

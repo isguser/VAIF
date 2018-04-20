@@ -4,15 +4,15 @@ using UnityEngine;
 public class Conversation : MonoBehaviour
 {
     //TODO
-    [Tooltip("The nextConversation in the Timeline to be played after this Conversation.")]
+    [Tooltip("Optional. The nextConversation of the Timeline's list of conversations to be played after this Conversation completes. WORK IN PROGRESS.")]
     public GameObject nextConversation;
-    [Tooltip("Optional. The IDescription is how you can describe your Conversation with a simple description ID. EX: Conversation1")]
+    [Tooltip("Optional. The IDescription is how you can describe each unique Conversation with a simple description ID. EX: Conversation1")]
     public string IDescription;
-    [Tooltip("This is used as a load for each event to be played.")]
+    [Tooltip("No action needed. This is used as a condition for this conversation to be played. For example, proximity to agent.")]
     public EventIM.EventSetting wantInRange;
-    [Tooltip("This is used as a load for each event to be played.")]
+    [Tooltip("No action needed. This is used as a condition for this conversation to be played. For example, gazing at agent.")]
     public EventIM.EventSetting wantLookedAt;
-    [Tooltip("This will be filled at runtime based on the EventIM objects under this level of the heirarchy.")]
+    [Tooltip("No action needed. This is a list of the events that will be loaded at runtime.")]
     public List<EventIM> events;
     public bool started = false;
     public bool finished = false;

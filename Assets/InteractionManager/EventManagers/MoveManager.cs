@@ -7,6 +7,7 @@ public class MoveManager : MonoBehaviour
 
     protected Vector3 moveTarget;
 
+    /* Start moving the agent. */
     public void StartMoving(Move target)
     {
         move = target;
@@ -16,12 +17,14 @@ public class MoveManager : MonoBehaviour
         target.finish();
     }
 
+    /* Stop the agent's motion. */
     public void Stop()
     {
         moving = false;
         move.finish();
     }
 
+    /* Called on every frame */
     private void Update()
     {
         if (move.follow && moving)

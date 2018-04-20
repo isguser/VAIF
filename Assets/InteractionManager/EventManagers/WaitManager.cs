@@ -10,6 +10,7 @@ public class WaitManager : MonoBehaviour
 
     }
 
+    /* Start a wait event for a defined time from Unity */
     public void Waiting(Wait w)
     {
         wait = w;
@@ -17,6 +18,7 @@ public class WaitManager : MonoBehaviour
         Invoke("StopWaiting", w.waitTime);
     }
 
+    /* Stop a wait event after the defined time from Unity */
     public void StopWaiting()
     {
         wait.finish();

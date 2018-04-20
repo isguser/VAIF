@@ -8,6 +8,7 @@ public class InAgentRange : MonoBehaviour
     protected GameObject PlayerCollider;
     string tagged = "Player";
 
+    /* What to do once we enter an agent's collider? */
     void OnTriggerEnter(Collider other)
     {
         PlayerCollider = other.gameObject;
@@ -18,6 +19,7 @@ public class InAgentRange : MonoBehaviour
         }
     }
 
+    /* What to do when we leave an agent's collider? */
     void OnTriggerExit(Collider other)
     {
         PlayerCollider = other.gameObject;
@@ -29,6 +31,7 @@ public class InAgentRange : MonoBehaviour
         }
     }
 
+    /* What to do when we are near an agent's collider? */
     void InCharacterRange()
     {
         if (this.gameObject.GetComponentInParent<AgentStatusManager>().name == this.transform.parent.name)

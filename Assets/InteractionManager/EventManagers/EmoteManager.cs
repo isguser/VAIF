@@ -18,6 +18,7 @@ public class EmoteManager : MonoBehaviour
             emotionalFace = getFace().GetComponentInChildren<SkinnedMeshRenderer>();
     }
 
+    /* Apply blendshape to the agent's face. */
     public void EmotionBlendshape(Emote emotionDisplay)
     {
         bsIndex = findEmotionBlendshape(emotionDisplay.emotion);
@@ -30,6 +31,7 @@ public class EmoteManager : MonoBehaviour
         nextBlendshapeValue = emotionDisplay.emotionalValue;
         startTransition = true;
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -46,6 +48,7 @@ public class EmoteManager : MonoBehaviour
         }
     }
 
+    /* Find the blendshape. */
     int findEmotionBlendshape(string blendshapeName)
     {
         blendshapeContainer = emotionalFace.sharedMesh;
@@ -59,7 +62,8 @@ public class EmoteManager : MonoBehaviour
         }
         return -1;
     }
-    
+
+    /* Find the face of the agent to map the emotion. */
     private Transform getFace()
     {
         foreach (Transform child in transform)

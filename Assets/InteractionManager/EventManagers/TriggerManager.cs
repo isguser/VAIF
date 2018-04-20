@@ -7,6 +7,7 @@ public class TriggerManager : MonoBehaviour
 
     }
 
+    /* Start a trigger event */
     public void Trigger(Trigger trigger)
     {
         trigger.start();

@@ -47,7 +47,7 @@ public class InteractionManager : MonoBehaviour
     protected MoveManager mm;
     protected EmoteManager em;
     protected MemoryCheckManager mcm;
-    protected ConversationManager cm;
+    protected ConversationIM cm;
 
     private void Start() {
         dm = new DialogManager();
@@ -59,16 +59,17 @@ public class InteractionManager : MonoBehaviour
         mm = new MoveManager();
         em = new EmoteManager();
         mcm = new MemoryCheckManager();
-        cm = new ConversationManager();
+        cm = new ConversationIM();
 
         rm = gameObject.GetComponent<ResponseManager>();
         wm = gameObject.GetComponent<WildcardManager>();
         tm = gameObject.GetComponent<TriggerManager>();
         wwm = gameObject.GetComponent<WaitManager>();
         mcm = gameObject.GetComponent<MemoryCheckManager>();
-        cm = gameObject.GetComponent<ConversationManager>();
+        cm = gameObject.GetComponent<ConversationIM>();
     }
 
+    /* Called once on every frame */
     private void Update() {
         //is another event running?
         if ( needToWait(currEvent) )
@@ -92,6 +93,7 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
+    /* Perform the unique actions for each event to run */
     public void RunGame(Conversation c, EventIM e) {
         if ( e.name!="Trigger" ) {
             //memories.Add(eventIndex);
@@ -149,6 +151,7 @@ public class InteractionManager : MonoBehaviour
     }
 
     /* ********** Accessors: State Changes ********** */
+    /* What is the current state to START the event? */
     private bool getState(EventIM e) {
         EventSettingValue esv = new EventSettingValue();
         AgentStatusManager agent = e.agent.GetComponent<AgentStatusManager>();
@@ -159,7 +162,8 @@ public class InteractionManager : MonoBehaviour
         esv.setCurrPhysical(agent.getPhysicalState());
         return esv.checkStateMatch();
     }
-    
+
+    /* What is the current state to START the conversation?  */
     private bool inConversation(Conversation c) {
         EventSettingValue esv = new EventSettingValue();
         AgentStatusManager agent = c.getAgent();
@@ -170,11 +174,13 @@ public class InteractionManager : MonoBehaviour
     }
 
     /* ********** Mutators: Event Sequence Behavior ********** */
+    /* Save this conversation/event as the currently played one. */
     private void done(Conversation c, EventIM e) {
         currConv = c;
         currEvent = e;
     }
 
+    /* Does this event need to wait before we can run it? */
     private bool needToWait(EventIM e) {
         //is this the first event?
         if ( e==null )
@@ -193,6 +199,7 @@ public class InteractionManager : MonoBehaviour
         return e.isActive();
     }
 
+    /* Is any agent waiting on a verbal event? */
     private bool waitingOnVerbalEvent()
     {
         //check if any agent is speaking
@@ -202,12 +209,14 @@ public class InteractionManager : MonoBehaviour
         return false;
     }
 
+    /* Is this event and the currently playing event of a conversational type? */
     private bool bothAreConversational(EventIM e) {
         if (isConversational(e) && isConversational(currEvent))
             return true;
         return false;
     }
 
+    /* Is this event a Dialog/Response/Wildcard? */
     private bool isConversational(EventIM e)
     {
         switch (e.name) {
@@ -220,6 +229,7 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
+    /* Does this event require a response (is it a Response/Wildcard)? */
     private bool eventNeedsResponse(EventIM e) {
         //of what type is the conversation?
         switch (e.name) {
