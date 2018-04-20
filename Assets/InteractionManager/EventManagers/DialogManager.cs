@@ -25,7 +25,7 @@ public class DialogManager : MonoBehaviour
     {
         dialog = d;
         dialog.start();
-        source.Stop();
+        //source.Stop();
         if (dialog.audioFile != null)
         {
             currentDialog = dialogs.Find((AudioClip a) => { return a.name == dialog.audioFile.name; });

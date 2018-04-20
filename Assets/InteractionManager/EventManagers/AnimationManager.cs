@@ -13,7 +13,7 @@ public class AnimationManager : MonoBehaviour
     protected bool looping;
     protected float animationLength = 0f;
 
-    private string TAG = "AM";
+    private string TAG = "AM ";
 
     private void Start()
     {
@@ -102,6 +102,7 @@ public class AnimationManager : MonoBehaviour
 
     public void ToIdle()
     {
+        Debug.Log(TAG + name + " finished playing.");
         animator.SetInteger("pathIndex", -1);
         animate.finish();
     }

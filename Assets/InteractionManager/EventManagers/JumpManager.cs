@@ -7,7 +7,7 @@ public class JumpManager : MonoBehaviour
     private List<EventIM> events = new List<EventIM>();
     private List<EventIM> next = new List<EventIM>();
 
-    private string TAG = "JM";
+    private string TAG = "JM ";
 
     /** nextEvents stores each event's nextEvent (GameObject)
      * CONVENTION: null means there is no next specified 'next' */
@@ -38,5 +38,9 @@ public class JumpManager : MonoBehaviour
                 return next[i];
             }
         return null; //likely unreachable
+    }
+
+    public EventIM getFirstEvent() {
+        return events[0];
     }
 }

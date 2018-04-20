@@ -33,8 +33,8 @@ public class LookAtCollision : MonoBehaviour
     {
         if (this.gameObject.GetComponent<AgentStatusManager>().name == this.gameObject.name)
         {
-            Debug.Log("looking at: " + this.gameObject.GetComponent<AgentStatusManager>().name);
             this.gameObject.GetComponent<AgentStatusManager>().startLookedAt();
+            //Debug.Log("looking at: " + this.gameObject.GetComponent<AgentStatusManager>().name);
         }
     }
 }

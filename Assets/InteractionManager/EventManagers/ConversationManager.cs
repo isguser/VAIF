@@ -9,44 +9,38 @@ public class ConversationManager : MonoBehaviour {
     //public GameObject[] conversationsNeededAfterThis;
     //[Tooltip("Optional. Jump to which Conversation before beginning this Conversation.")]
     //public GameObject[] conversationsNeededBeforeThis;
-    private List<EventIM> firsts;
-    public Conversation[] conversations; //The amount of conversations to track must be added in editor
+    [Tooltip("Drag each conversation to be played in the desired order.")]
+    public Conversation[] conversation; //The amount of conversations to track must be added in editor
 
-    private string TAG = "CM";
+    private string TAG = "CM ";
 
     private void Start()
     {
-        setFirstEvents();
+
     }
 
-    private void setFirstEvents()
+    private void Update()
     {
-        /* Grab the first events of each conversation */
-        firsts = new List<EventIM>();
-        foreach (Conversation c in conversations)
-        {
-            firsts.Add(c.getFirstUnfinishedEvent()); //c.events[0]);
-        }
     }
 
     public bool inConversation()
     {
-        /* Check if the game is in a conversation already */
-        foreach (Conversation c in conversations)
-            if (c.hasStarted() && !c.isDone())
+        /* Check if the user is in a conversation already */
+        foreach (Conversation c in conversation)
+            if ( c.isActive() )
             {
-                Debug.Log(TAG + " We are in a conversation");
+                //Debug.Log(TAG + " We are in a conversation");
                 return true;
             }
-        Debug.Log(TAG + " We are NOT in a conversation");
+        //Debug.Log(TAG + " We are NOT in a conversation");
         return false;
     }
 
     public List<EventIM> grabConversationEvents(EventIM e)
     {
         /* Grab the events in e's Conversation's events */
-        Debug.Log(TAG + " grab this convo's events");
-        foreach (Conversation c in conversations)
+        //Debug.Log(TAG + " grab this convo's events");
+        foreach (Conversation c in conversation)
         {
             if (c.name.Equals(e.name))
                 return c.events;

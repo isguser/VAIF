@@ -1,112 +1,225 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Conversation : MonoBehaviour// : EventIM
+public class Conversation : MonoBehaviour
 {
+    //TODO
     [Tooltip("The nextConversation in the Timeline to be played after this Conversation.")]
     public GameObject nextConversation;
     [Tooltip("Optional. The IDescription is how you can describe your Conversation with a simple description ID. EX: Conversation1")]
     public string IDescription;
-    [Tooltip("Required. Which Agent(s) are involved in this interaction?")]
-    public List<AgentStatusManager> agents = new List<AgentStatusManager>();
-    [Tooltip("Required (SAME SIZE OF AGENTS). Do you want the user to be inRange of ANY Agent to activate this Conversation? DONTCARE allows it to begin without necessity.")]
-    public List<ConversationSetting> wantInRange = new List<ConversationSetting>();
-    [Tooltip("Required (SAME SIZE OF AGENTS). Do you want the user to lookAt ANY Agent to activate this Conversation? DONTCARE allows it to begin without necessity.")]
-    public List<ConversationSetting> wantLookedAt = new List<ConversationSetting>();
+    [Tooltip("This is used as a load for each event to be played.")]
+    public EventIM.EventSetting wantInRange;
+    [Tooltip("This is used as a load for each event to be played.")]
+    public EventIM.EventSetting wantLookedAt;
     [Tooltip("This will be filled at runtime based on the EventIM objects under this level of the heirarchy.")]
     public List<EventIM> events;
     public bool started = false;
     public bool finished = false;
+    private bool leftConv = false;
+    private EventIM currEvent;
+    public EventIM prevEvent;
+    private EventIM nextEvent;
+    private AgentStatusManager agent; //agent for the wantInRange/wantLookedAt
 
-    public enum ConversationSetting
-    {
-        TRUE,
-        DONTCARE, //can be T/F
-        FALSE
-    }
     /**
      * Future implementation: Track if the user left mid-conversation and where. 
      * protected bool startedButNotFinished;
      * protected GameObject whereWeLeftOff; //This cannot be a response/wildcard event
      **/
     private JumpManager jm;
+    private string TAG = "C ";
 
-    private void Start()
-    {
+    /* Called on build */
+    private void Start() {
+        TAG += name + " ";
+
         //load the events
         foreach (Transform child in transform)
             events.Add(child.GetComponentInChildren<EventIM>());
         jm = gameObject.GetComponent<JumpManager>();
         jm.load(events);
 
-        if (agents.Count != wantInRange.Count && agents.Count != wantLookedAt.Count)
-            Debug.Log("List of agents must match lists of: wantInRange and wantLookedAt");
+        currEvent = jm.getFirstEvent();
+        nextEvent = jm.getNextEvent(currEvent);
+        setWants();
     }
 
-    public bool isOver()
-    {
-        /* Verify if all events in this Conversation are started and done */
-        foreach ( EventIM e in events )
-            if ( e.isLastEvent && e.isDone() )
-                return true;
+    /* Called on every frame */
+    private void Update() {
+        //this conversation is active
+        if ( currEvent.hasStarted() )
+            started = true;
+
+        if ( leftConv ) {
+            prevEvent = currEvent;
+            return;
+        }
+
+        //this means we are NOT able to play another event
+        if ( isPlayingSameType(currEvent) )
+            return;
+
+        prevEvent = currEvent;
+
+        switch ( currEvent.name ) {
+            case "Dialog":
+                if (nextEvent != null && neededResponse(currEvent)) {
+                    currEvent.waitForResponse(); //mark it 'unfinished'
+                    return; //wait...
+                }
+                if ( nextEvent!=null && !isConversational(currEvent) )
+                    playNextKnown(); //play the next event without wait
+                if ( nextEvent==null )
+                    Debug.Log(TAG + "Error: need next event after Response/Wildcard");
+                break;
+            case "Response":
+            case "Wildcard":
+                //Debug.Log(TAG + currEvent.name + " is a Resp/WC");
+                if ( nextEvent == null )
+                    Debug.Log(TAG + "Error: need next event after Response/Wildcard");
+                if ( !currEvent.isDone() )
+                    return; //wait until nextEvent is known
+                else
+                    playNextFind(); //play the next event when
+                break;
+            default:
+                //not a conversational event (i.e. it can play concurrently)
+                if (nextEvent == null)
+                    Debug.Log(TAG + "Error: need next event after Response/Wildcard");
+                if ( nextEvent!=null )
+                    playNextKnown();
+                else {
+                    //Debug.Log(TAG + "is done");
+                    finished = true;
+                }
+                break;
+        }
+    }
+
+    /* Play the next event concurrently with other active events */
+    private void playNextKnown() {
+        currEvent = jm.getNextEvent(prevEvent); //we already know what it's next was
+        setWants();
+    }
+
+    /* Play the next event concurrently with other active events */
+    private void playNextFind() {
+        prevEvent.finish();
+        currEvent = prevEvent.nextEvent.GetComponent<EventIM>(); //we had to wait to find next
+        setWants();
+    }
+
+    /* Get the currently played event's next event to play. */
+    public EventIM getNextEvent() {
+        if (!currEvent.hasStarted())
+        {
+            setWants();
+            return currEvent;
+        }
+        if (neededResponse(currEvent))
+        {
+            currEvent = currEvent.nextEvent.GetComponent<EventIM>();
+            setWants();
+            return currEvent;
+        }
+        currEvent = jm.getNextEvent(currEvent);
+        setWants();
+        return currEvent;
+    }
+
+    /* Is another event playing of this same type? */
+    private bool isPlayingSameType(EventIM e) {
+        int counter = 0;
+        foreach ( EventIM E in events )
+            if ( e.name==E.name && !E.isActive() )
+                counter++;
+        if ( counter>0 )
+            return true;
         return false;
     }
 
-    public bool isTheLastEvent(EventIM e) {
-        //return ( e==events[events.Count-1] ); //todo -- it can have a jump?
-        return e.isLastEvent;
+    /* Is this event's type a conversational one? */
+    private bool isConversational(EventIM e ) {
+        switch (e.name) {
+            case "Diagonal":
+            case "Response":
+            case "Wildcard":
+                return true;
+            default:
+                return false;
+        }
     }
 
-    public List<EventIM> getEvents()
-    {
-        return events;
+    /* Only Response and Wildcards require a recognition from user. */
+    private bool neededResponse(EventIM e) {
+        //assuming that the event is complete TO GET its nextEvent
+        switch (e.name) {
+            case "Response":
+            case "Wildcard":
+                return true;
+            default:
+                return false;
+        }
     }
 
-    public EventIM getFirstUnfinishedEvent()
-    {
-        /* Returns the first event in this conversation that has not been finished */
-        foreach (EventIM e in events)
-            if (!e.isDone())
-                return e;
-        return events[events.Count - 1];
-    }
-
-    public EventIM findNextEvent(EventIM e)
-    {
-        //start if we have not played any yet
-        if ( e==null )
-            return getFirstUnfinishedEvent();
-        //is there a nextEvent to jump to?
-        EventIM tmp = jm.getNextEvent(e);
-        if ( tmp==null )
-            return getFirstUnfinishedEvent();
-        return tmp;
-    }
-
-    public void eventIsDone(EventIM e) {
-        //mark the previous event for this Response as done, now
-        for ( int i=0; i<events.Count; i++ )
-            if ( events[i]==e && i>0 ) {
-                events[i-1].finish();
-                return;
-            }
-    }
 
     /* ********** Accessors: State Changes ********** */
-    public void start()
-    {
-        started = true;
-    }
-    public bool hasStarted()
-    {
+    public bool hasStarted() {
         return started;
     }
-    public void finish()
-    {
-        finished = true;
+
+    public bool isDone() {
+        return started && finished;
     }
-    public bool isDone()
-    {
-        return finished;
+
+    public bool isActive() {
+        return started && !finished;
+    }
+
+    /* User moved to another conversation */
+    public void leftConversation() {
+        leftConv = true;
+    }
+
+    /* User returned this conversation from another conversation */
+    public void returnedToConversation() {
+        leftConv = false;
+        currEvent = prevEvent;
+        currEvent.wantToReplay(); //neither started/finished
+    }
+
+    /* User changed conversations */
+    public void changedConversations() {
+        if ( leftConv ) //we had already left this conversation
+            returnedToConversation();
+        else
+            leftConversation(); //we are leaving this conversation
+    }
+
+
+    /* ********** Accessors: Event Matches ********** */
+    private void setWants() {
+        if ( currEvent==null || currEvent.isLastEvent )
+        {
+            finished = true;
+            Debug.Log(TAG + "ended this conversation.");
+            return;
+        }
+        agent = currEvent.agent.GetComponent<AgentStatusManager>();
+        wantInRange = currEvent.wantInRange;
+        wantLookedAt = currEvent.wantLookedAt;
+    }
+
+    public AgentStatusManager getAgent() {
+        return agent;
+    }
+
+    public EventIM.EventSetting getWantLookedAt() {
+        return wantLookedAt;
+    }
+
+    public EventIM.EventSetting getWantInRange() {
+        return wantInRange;
     }
 }

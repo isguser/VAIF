@@ -52,7 +52,6 @@ public class EventIM : MonoBehaviour
                 conversation.AddComponent<Conversation>();
                 conversation.AddComponent<JumpManager>();
                 conversation.AddComponent<EventIM>();
-                eventType = EventType.Conversation;
                 SetParent(conversation);
                 break;
             case "Dialog":
@@ -216,6 +215,23 @@ public class EventIM : MonoBehaviour
     public bool isDone()
     {
         return finished;
+    }
+
+    public void waitForResponse()
+    {
+        Debug.Log("Dialog is waiting for response...");
+        finished = false;
+    }
+
+    public bool isActive()
+    {
+        return hasStarted() && !isDone();
+    }
+
+    public void wantToReplay()
+    {
+        started = false;
+        finished = false;
     }
 
     public EventType getType()

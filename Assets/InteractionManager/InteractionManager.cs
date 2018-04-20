@@ -33,9 +33,9 @@ public class InteractionManager : MonoBehaviour
 {
     public List<AgentStatusManager> agents = new List<AgentStatusManager>();
     private List<GameObject> memories = new List<GameObject>();
-    public List<EventIM> events = new List<EventIM>();
-
-    private EventIM lastPlayed;
+    
+    private Conversation currConv;
+    private EventIM currEvent;
     private string TAG = "IM ";
     
     protected DialogManager dm;
@@ -70,48 +70,30 @@ public class InteractionManager : MonoBehaviour
     }
 
     private void Update() {
-        //if we're waiting on a response
-        if ( lastPlayed!=null && eventNeedsResponse(lastPlayed) && lastPlayed.nextEvent==null )
-            return;
         //is another event running?
-        if ( lastPlayed!=null && !lastPlayed.isDone() )
-            return; //wait til the next frame
-        EventIM e;
-        //find the first Conversation to play this game
-        foreach ( Conversation c in cm.conversations ) {
-            //is the user in this Conversation?
-            if ( !getState(c) )
+        if ( needToWait(currEvent) )
+            return;
+        foreach ( Conversation c in cm.conversation ) {
+            //is this Conversation complete OR are we not in this c's bounds?
+            if ( c.isDone() || !inConversation(c) )
                 continue;
-            //is this Conversation complete?
-            if ( c.isOver() ) {
-                Debug.Log(TAG + c.name + "is over");
-                c.finish();
+            if ( currConv!=null && currConv!=c ) {
+                currConv.changedConversations();
+                c.changedConversations();
+            }
+            EventIM e = c.getNextEvent();
+            //can we run this Conversation?
+            if ( !getState(e) )
                 continue;
-            }
-            //get the next event to run in this Conversation
-            e = nextEvent(c);
-            //is another event running?
-            if ( !canStartEvent(e) )
-                return;
-            //if the conditions match, run this Conversation
-            if ( getState(e) ) {
-                c.start();
-                lastPlayed = e; //this event is the most recently played
-                //move to the next Conversation
-                RunGame(c,e);
-                return;
-            }
-            //is the event done?
-            if ( e.isDone() ) {
-                if ( e.name=="Response" )
-                    c.eventIsDone(e);
-                done(e);
-            }
+            //move to the next Conversation
+            RunGame(c, e);
+            done(c, e);
+            return; //don't check next conversation(s)
         }
     }
 
     public void RunGame(Conversation c, EventIM e) {
-        if ( ( getState(e) && !waitingOnVerbalEvent() ) || e.name == "Trigger") {
+        if ( e.name!="Trigger" ) {
             //memories.Add(eventIndex);
             Debug.Log(TAG + "Playing Conversation/Event: " + c.name + "/" + e.name);
             switch ( e.name ) {
@@ -135,8 +117,10 @@ public class InteractionManager : MonoBehaviour
                     //TODO jump between conversations?
                     break;
                 case "Wildcard":
-                    if (rm.isRunning())
+                    if ( rm.isRunning() )
                         rm.stopKeywordRecognizer();
+                    if ( wm!=null || wm.isRunning() )
+                        wm.stop();
                     wm.Wildcard(e.GetComponent<Wildcard>());
                     break;
                 case "Trigger":
@@ -161,72 +145,72 @@ public class InteractionManager : MonoBehaviour
                     mcm.CheckMemories(e.GetComponent<MemoryCheck>());
                     break;
             }
-            if ( !eventIsConversational(e) )
-                e.finish();
         }
     }
 
     /* ********** Accessors: State Changes ********** */
     private bool getState(EventIM e) {
         EventSettingValue esv = new EventSettingValue();
-        AgentStatusManager tmp = e.agent.GetComponent<AgentStatusManager>();
+        AgentStatusManager agent = e.agent.GetComponent<AgentStatusManager>();
         //grabbing author choices from UNITY
         esv.setWantLookedAt(e.wantLookedAt);
-        esv.setWantLookedAt(e.wantInRange);
+        esv.setWantInRange(e.wantInRange);
         //storing the current state of the user
-        esv.setCurrVerbals(tmp.getVerbalState());
-        esv.setCurrPhysical(tmp.getPhysicalState());
+        esv.setCurrPhysical(agent.getPhysicalState());
+        return esv.checkStateMatch();
+    }
+    
+    private bool inConversation(Conversation c) {
+        EventSettingValue esv = new EventSettingValue();
+        AgentStatusManager agent = c.getAgent();
+        esv.setWantLookedAt(c.getWantLookedAt());
+        esv.setWantInRange(c.getWantInRange());
+        esv.setCurrPhysical(agent.getPhysicalState());
         return esv.checkStateMatch();
     }
 
-    private bool getState(Conversation c) {
-        ConversationSettingValue csv = new ConversationSettingValue(c.agents.Count);
-        //start Conv c if: we're inRange of ANY agent AND we're lookAt ANY agent
-        csv.setWantLookedAt(c.wantLookedAt);
-        csv.setWantInRange(c.wantInRange);
-        csv.setCurrPhysical(c.agents);
-        return csv.checkStateMatch();
+    /* ********** Mutators: Event Sequence Behavior ********** */
+    private void done(Conversation c, EventIM e) {
+        currConv = c;
+        currEvent = e;
     }
 
-    private bool waitingOnVerbalEvent() {
+    private bool needToWait(EventIM e) {
+        //is this the first event?
+        if ( e==null )
+            return false;
+        //Debug.Log(TAG + e.IDescription + " is not null");
+        //this is a Resp/WC, and we need it to finish first (recognize to know what's next)
+        if ( eventNeedsResponse(e) && e.isActive() )
+            return true;
+        //Debug.Log(TAG + e.IDescription + " is not a resp/wc");
+        if ( !bothAreConversational(e) ) {
+            currEvent = currConv.getNextEvent(); //to run concurrently
+            e = currEvent;
+            //Debug.Log(TAG + currEvent.name + " should play now");
+        }
+        //Debug.Log(TAG + e.IDescription + e.hasStarted() + e.isDone());
+        return e.isActive();
+    }
+
+    private bool waitingOnVerbalEvent()
+    {
         //check if any agent is speaking
         foreach (AgentStatusManager a in agents)
-        {
-            //Debug.Log(TAG + " " + a.name + " lookedat/inrange: " + a.isLookedAt() + a.isInRange());
             if (a.isSpeaking() || a.isListening())
                 return true;
-        }
         return false;
     }
 
-    /* ********** Mutators: Event Sequence Behavior ********** */
-    private void done(EventIM e)
+    private bool bothAreConversational(EventIM e) {
+        if (isConversational(e) && isConversational(currEvent))
+            return true;
+        return false;
+    }
+
+    private bool isConversational(EventIM e)
     {
-        if (e.nextEvent != null && e.nextEvent.name == "Response")
-            return; //wait until the response is complete to mark this event as done
-        Debug.Log(TAG + "Finished Event " + e.name);
-        e.finish();
-    }
-
-    private bool canStartEvent(EventIM e) {
-        //has e started, or can it?
-        return ( !e.hasStarted() && !e.isDone() );
-    }
-
-    private EventIM nextEvent(Conversation c)
-    {
-        //start if we have not played any yet
-        if (lastPlayed == null)
-            return c.getFirstUnfinishedEvent();
-        //if the event is conversational, it had multiple nextEvent possibilities
-        if ( eventNeedsResponse(lastPlayed) )
-            return lastPlayed.nextEvent.GetComponent<EventIM>();
-        return c.findNextEvent(lastPlayed);
-    }
-
-    private bool eventIsConversational(EventIM e) {
-        //of what type is the conversation?
-        switch ( e.name ) {
+        switch (e.name) {
             case "Dialog":
             case "Response":
             case "Wildcard":
@@ -236,11 +220,9 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    private bool eventNeedsResponse(EventIM e)
-    {
+    private bool eventNeedsResponse(EventIM e) {
         //of what type is the conversation?
-        switch (e.name)
-        {
+        switch (e.name) {
             case "Response":
             case "Wildcard":
                 return true;

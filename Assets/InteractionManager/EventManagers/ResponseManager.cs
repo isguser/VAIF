@@ -51,12 +51,9 @@ public class ResponseManager : MonoBehaviour
 
     private GameObject nextEvent;
 
-    private string TAG = "RM";
+    private string TAG = "RM ";
 
-    void Start()
-    {
-        //interactionManager = gameObject.GetComponent<InteractionManager>();
-    }
+    void Start() {  }
 
     public void Respond(Response r)
     {
@@ -69,7 +66,7 @@ public class ResponseManager : MonoBehaviour
         keywordRecognizer = new KeywordRecognizer(keywordDictionary.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
-        Debug.Log(TAG + " " + agentStatus.name + " is listening...");
+        Debug.Log(TAG + agentStatus.name + " is listening...");
         if (this.response.timeout > 0)
         {
             Invoke("ResponseTimeout", this.response.timeout);
@@ -83,6 +80,7 @@ public class ResponseManager : MonoBehaviour
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
             //Debug.Log(TAG + g + " jumps to: " + response.jumpIDs[id].GetComponent<EventIM>().IDescription);
+            if (keywordDictionary.ContainsKey(g)) continue; //no duplicates
             keywordDictionary.Add(g, () => { });
             if (g.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
                 addAffirmations(id);
@@ -112,6 +110,7 @@ public class ResponseManager : MonoBehaviour
         foreach (string g in affirmation)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            if (keywordDictionary.ContainsKey(g)) return; //no duplicates
             keywordDictionary.Add(g, () => { });
         }
     }
@@ -121,6 +120,7 @@ public class ResponseManager : MonoBehaviour
         foreach (string g in negation)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            if (keywordDictionary.ContainsKey(g)) return; //no duplicates
             keywordDictionary.Add(g, () => { });
         }
     }
@@ -130,6 +130,7 @@ public class ResponseManager : MonoBehaviour
         foreach (string g in unsure)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
+            if (keywordDictionary.ContainsKey(g)) return; //no duplicates
             keywordDictionary.Add(g, () => { });
         }
     }
@@ -139,7 +140,7 @@ public class ResponseManager : MonoBehaviour
         //interactionManager.eventIndex = response.timeoutJumpID;
         nextEvent = response.timeoutJumpID;
         response.nextEvent = response.timeoutJumpID;
-        Debug.Log(TAG + " timeout is " + response.timeout);
+        Debug.Log(TAG + "timeout is " + response.timeout);
         return false;
     }
 
@@ -149,15 +150,16 @@ public class ResponseManager : MonoBehaviour
         // if the keyword recognized is in our dictionary, call that Action.
         if (keywordDictionary.TryGetValue(args.text, out keywordAction))
         {
-            Debug.Log(TAG + " " + args.text + " recognized; invoked: " + keywordAction.ToString());
+            Debug.Log(TAG + args.text + " recognized; invoked: " + keywordAction.ToString());
             //foreach (GrammarMapper gm in gMapper) { Debug.Log(gm.ToString()); }
             for (int i = 0; i < gMapper.Count; i++)
             {
                 if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = null }))
                 {
-                    Debug.Log(TAG + " Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().name);
+                    Debug.Log(TAG + "Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().name + " " + gMapper[i].jumpTo.GetComponent<EventIM>().IDescription);
                     //interactionManager.eventIndex = gMapper[i].jumpTo;
                     nextEvent = gMapper[i].jumpTo;
+                    response.finish();
                     response.nextEvent = gMapper[i].jumpTo;
                     keywordRecognizer.Stop();
                     keywordRecognizer.Dispose();
@@ -169,7 +171,6 @@ public class ResponseManager : MonoBehaviour
                 }
             }
         }
-        response.finish();
     }
 
     public EventIM getNextEvent()
@@ -197,8 +198,6 @@ public class ResponseManager : MonoBehaviour
 
     private void buildRepetitions()
     {
-        if (repetition.Contains("What")) //first item
-            return; //no duplicates
         repetition.Add("What");
         repetition.Add("Huh");
         repetition.Add("I don't know what you said");
@@ -220,8 +219,6 @@ public class ResponseManager : MonoBehaviour
 
     private void buildAffirmations()
     {
-        if (affirmation.Contains("uh huh")) //last item
-            return; //no duplicates
         affirmation.Add("yeah");
         affirmation.Add("yup");
         affirmation.Add("yep");
@@ -234,8 +231,6 @@ public class ResponseManager : MonoBehaviour
 
     private void buildNegations()
     {
-        if (negation.Contains("no, thanks")) //last item
-            return; //no duplicates
         negation.Add("nah");
         negation.Add("nope");
         negation.Add("no way");
@@ -245,8 +240,6 @@ public class ResponseManager : MonoBehaviour
 
     private void buildUnsure()
     {
-        if (unsure.Contains("i guess")) //last item
-            return; //no duplicates
         unsure.Add("i'm unsure");
         unsure.Add("i'm not sure");
         unsure.Add("i dunno");

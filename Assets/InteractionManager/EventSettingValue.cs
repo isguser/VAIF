@@ -6,7 +6,6 @@ public class EventSettingValue : MonoBehaviour
 {
     private bool[] want = new bool[] { false, false };
     private bool[] dontcare = new bool[] { false, false };
-    private bool[] doingVerbals = new bool[] { false, false };
     private bool[] have;
     private string TAG = "ESM";
 
@@ -22,7 +21,7 @@ public class EventSettingValue : MonoBehaviour
     }
 
 
-    public void setWantRange(EventIM.EventSetting w)
+    public void setWantInRange(EventIM.EventSetting w)
     {
         //store what the author wants
         switch (w)
@@ -56,13 +55,7 @@ public class EventSettingValue : MonoBehaviour
         }
     }
 
-    public void setCurrVerbals(bool[] sysState)
-    {
-        //store the current verbal state of the system
-        doingVerbals[0] = sysState[0];
-        doingVerbals[1] = sysState[1];
-    }
-
+    
     public void setCurrPhysical(bool[] sysState)
     {
         //store the current physical state of the system
@@ -78,8 +71,6 @@ public class EventSettingValue : MonoBehaviour
         //debugMe();
         if (have.Length != want.Length)
             return false; //mismatched sizes
-        if (talkingOrListening())
-            return false; //agent is talk-/listen-ing
         for (int i = 0; i < dontcare.Length; i++)
             if (dontcare[i]) //if we don't care if T/F, skip it
                 continue;
@@ -89,26 +80,6 @@ public class EventSettingValue : MonoBehaviour
         return true;
     }
 
-    private bool talkingOrListening()
-    {
-        for (int i = 0; i < doingVerbals.Length; i++)
-            if (doingVerbals[i])
-                return true;
-        return false;
-    }
-
-    private void debugMe()
-    {
-        //This code is for testing purposes only
-        for (int i = 0; i < want.Length; i++)
-        {
-            Debug.Log(TAG + " i=" + i + " Dontcare=" + dontcare[i] +
-                " Want=" + want[i] +
-                " Have=" + have[i]);
-        }
-        Debug.Log(TAG + "isSpeaking: " + doingVerbals[0] + " isListening: " + doingVerbals[1]);
-    }
-
     public void reset()
     {
         //reset for next event
@@ -116,8 +87,6 @@ public class EventSettingValue : MonoBehaviour
         {
             want[i] = false;
             dontcare[i] = false;
-            if (i < doingVerbals.Length)
-                doingVerbals[i] = false;
         }
     }
 }
