@@ -22,7 +22,6 @@ public class EventIM : MonoBehaviour
     protected EventSetting eventSetting;
 
     public enum EventType {
-        Conversation,
         Animation,
         Dialog,
         Emote,
@@ -45,14 +44,6 @@ public class EventIM : MonoBehaviour
 
     public void AddEvent(string type) {
         switch (type) {
-            case "Conversation":
-                GameObject conversation = new GameObject();
-                conversation.name = "Conversation";
-                conversation.AddComponent<Conversation>();
-                conversation.AddComponent<JumpManager>();
-                conversation.AddComponent<EventIM>();
-                SetParent(conversation);
-                break;
             case "Dialog":
                 GameObject dialog = new GameObject();
                 dialog.name = "Dialog";
@@ -60,6 +51,7 @@ public class EventIM : MonoBehaviour
                 dialog.GetComponent<Dialog>().agent = agent;
                 dialog.GetComponent<Dialog>().nextEvent = nextEvent;
                 dialog.GetComponent<Dialog>().wantInRange = wantInRange;
+                //GetComponentInParent<Conversation>().events.Add(dialog.GetComponent<EventIM>());
                 eventType = EventType.Dialog;
                 SetParent(dialog);
                 break;
@@ -69,8 +61,9 @@ public class EventIM : MonoBehaviour
                 animation.AddComponent<Animate>();
                 animation.GetComponent<Animate>().agent = agent;
                 animation.GetComponent<Animate>().nextEvent = nextEvent;
-                SetParent(animation);
+                //GetComponentInParent<Conversation>().events.Add(animation.GetComponent<EventIM>());
                 eventType = EventType.Animation;
+                SetParent(animation);
                 break;
             case "Response":
                 GameObject response = new GameObject();
@@ -78,8 +71,9 @@ public class EventIM : MonoBehaviour
                 response.AddComponent<Response>();
                 response.GetComponent<Response>().agent = agent;
                 response.GetComponent<Response>().nextEvent = nextEvent;
-                SetParent(response);
+                //GetComponentInParent<Conversation>().events.Add(response.GetComponent<EventIM>());
                 eventType = EventType.Response;
+                SetParent(response);
                 break;
             case "Wildcard":
                 GameObject wildcard = new GameObject();
@@ -87,8 +81,9 @@ public class EventIM : MonoBehaviour
                 wildcard.AddComponent<Wildcard>();
                 wildcard.GetComponent<Wildcard>().agent = agent;
                 wildcard.GetComponent<Wildcard>().nextEvent = nextEvent;
-                SetParent(wildcard);
+                //GetComponentInParent<Conversation>().events.Add(wildcard.GetComponent<EventIM>());
                 eventType = EventType.Wildcard;
+                SetParent(wildcard);
                 break;
             case "Trigger":
                 GameObject trigger = new GameObject();
@@ -96,8 +91,9 @@ public class EventIM : MonoBehaviour
                 trigger.AddComponent<Trigger>();
                 //trigger.GetComponent<Trigger>().agent = agent;
                 trigger.GetComponent<Trigger>().nextEvent = nextEvent;
-                SetParent(trigger);
+                //GetComponentInParent<Conversation>().events.Add(trigger.GetComponent<EventIM>());
                 eventType = EventType.Trigger;
+                SetParent(trigger);
                 break;
             case "Gaze":
                 GameObject gaze = new GameObject();
@@ -105,8 +101,9 @@ public class EventIM : MonoBehaviour
                 gaze.AddComponent<Gaze>();
                 gaze.GetComponent<Gaze>().agent = agent;
                 gaze.GetComponent<Gaze>().nextEvent = nextEvent;
-                SetParent(gaze);
+                //GetComponentInParent<Conversation>().events.Add(gaze.GetComponent<EventIM>());
                 eventType = EventType.Gaze;
+                SetParent(gaze);
                 break;
             case "Emote":
                 GameObject emote = new GameObject();
@@ -114,8 +111,9 @@ public class EventIM : MonoBehaviour
                 emote.AddComponent<Emote>();
                 emote.GetComponent<Emote>().agent = agent;
                 emote.GetComponent<Emote>().nextEvent = nextEvent;
-                SetParent(emote);
+                //GetComponentInParent<Conversation>().events.Add(emote.GetComponent<EventIM>());
                 eventType = EventType.Emote;
+                SetParent(emote);
                 break;
             case "Expression":
                 GameObject expression = new GameObject();
@@ -123,8 +121,9 @@ public class EventIM : MonoBehaviour
                 expression.AddComponent<Expression>();
                 expression.GetComponent<Expression>().agent = agent;
                 expression.GetComponent<Expression>().nextEvent = nextEvent;
-                SetParent(expression);
+                //GetComponentInParent<Conversation>().events.Add(expression.GetComponent<EventIM>());
                 eventType = EventType.Emote; //??
+                SetParent(expression);
                 break;
             case "Jump":
                 GameObject jump = new GameObject();
@@ -132,8 +131,9 @@ public class EventIM : MonoBehaviour
                 jump.AddComponent<Jump>();
                 jump.GetComponent<Jump>().agent = agent;
                 jump.GetComponent<Jump>().nextEvent = nextEvent;
-                SetParent(jump);
+                //GetComponentInParent<Conversation>().events.Add(jump.GetComponent<EventIM>());
                 eventType = EventType.Jump;
+                SetParent(jump);
                 break;
             case "Wait":
                 GameObject wait = new GameObject();
@@ -141,8 +141,9 @@ public class EventIM : MonoBehaviour
                 wait.AddComponent<Wait>();
                 wait.GetComponent<Wait>().agent = agent;
                 wait.GetComponent<Wait>().nextEvent = nextEvent;
-                SetParent(wait);
+                //GetComponentInParent<Conversation>().events.Add(wait.GetComponent<EventIM>());
                 eventType = EventType.Wait;
+                SetParent(wait);
                 break;
             case "MemoryCheck":
                 GameObject memoryCheck = new GameObject();
@@ -150,8 +151,9 @@ public class EventIM : MonoBehaviour
                 memoryCheck.AddComponent<MemoryCheck>();
                 memoryCheck.GetComponent<MemoryCheck>().agent = agent;
                 memoryCheck.GetComponent<MemoryCheck>().nextEvent = nextEvent;
-                SetParent(memoryCheck);
+                //GetComponentInParent<Conversation>().events.Add(memoryCheck.GetComponent<EventIM>());
                 eventType = EventType.MemoryCheck;
+                SetParent(memoryCheck);
                 break;
             case "EmotionCheck":
                 GameObject emotionCheck = new GameObject();
@@ -159,8 +161,9 @@ public class EventIM : MonoBehaviour
                 emotionCheck.AddComponent<EmotionCheck>();
                 emotionCheck.GetComponent<EmotionCheck>().agent = agent;
                 emotionCheck.GetComponent<EmotionCheck>().nextEvent = nextEvent;
-                SetParent(emotionCheck);
+                //GetComponentInParent<Conversation>().events.Add(emotionCheck.GetComponent<EventIM>());
                 eventType = EventType.EmotionCheck;
+                SetParent(emotionCheck);
                 break;
             case "RotateTo":
                 GameObject rotateTo = new GameObject();
@@ -168,8 +171,9 @@ public class EventIM : MonoBehaviour
                 rotateTo.AddComponent<RotateTo>();
                 rotateTo.GetComponent<RotateTo>().agent = agent;
                 rotateTo.GetComponent<RotateTo>().nextEvent = nextEvent;
-                SetParent(rotateTo);
+                //GetComponentInParent<Conversation>().events.Add(rotateTo.GetComponent<EventIM>());
                 eventType = EventType.RotateTo;
+                SetParent(rotateTo);
                 break;
             case "Move":
                 GameObject move = new GameObject();
@@ -177,8 +181,9 @@ public class EventIM : MonoBehaviour
                 move.AddComponent<Move>();
                 move.GetComponent<Move>().agent = agent;
                 move.GetComponent<Move>().nextEvent = nextEvent;
-                SetParent(move);
+                //GetComponentInParent<Conversation>().events.Add(move.GetComponent<EventIM>());
                 eventType = EventType.Move;
+                SetParent(move);
                 break;
             case "StopMoving":
                 GameObject stopMoving = new GameObject();
@@ -186,8 +191,9 @@ public class EventIM : MonoBehaviour
                 stopMoving.AddComponent<StopMoving>();
                 stopMoving.GetComponent<StopMoving>().agent = agent;
                 stopMoving.GetComponent<StopMoving>().nextEvent = nextEvent;
-                SetParent(stopMoving);
+                //GetComponentInParent<Conversation>().events.Add(stopMoving.GetComponent<EventIM>());
                 eventType = EventType.StopMoving;
+                SetParent(stopMoving);
                 break;
         }
     }
@@ -231,6 +237,8 @@ public class EventIM : MonoBehaviour
     {
         started = false;
         finished = false;
+        //if (nextEvent != null && nextEvent.name == "Response")
+            //nextEvent.GetComponent<EventIM>().wantToReplay();
     }
 
     public EventType getType()

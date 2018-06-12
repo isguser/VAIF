@@ -31,6 +31,7 @@ using System.Linq;
 
 public class InteractionManager : MonoBehaviour
 {
+    [Tooltip("Mandatory. Drag and drop the AgentStatusManager for each of the Agents to this list.")]
     public List<AgentStatusManager> agents = new List<AgentStatusManager>();
     private List<GameObject> memories = new List<GameObject>();
     

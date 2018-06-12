@@ -48,12 +48,10 @@ public class ResponseManager : MonoBehaviour
     private List<String> affirmation = new List<String>();
     private List<String> negation = new List<String>();
     private List<String> unsure = new List<String>();
-
+    private EventIM prevEventToRepeat;
     private GameObject nextEvent;
 
     private string TAG = "RM ";
-
-    void Start() {  }
 
 
     /* Agent will start listening for a response (starts recognition). */
@@ -103,8 +101,8 @@ public class ResponseManager : MonoBehaviour
         buildRepetitions();
         foreach (String s in repetition)
         {
-            gMapper.Add(new GrammarMapper() { item = s, jumpTo = this.response.nextEvent });
-            if (keywordDictionary.ContainsKey(s)) return; //no duplicates
+            gMapper.Add(new GrammarMapper() { item = s, jumpTo = this.response.getDialog() }); //go to the dialog before this response
+            if (keywordDictionary.ContainsKey(s)) continue; //no duplicates
             keywordDictionary.Add(s, () => { });
         }
     }
@@ -112,10 +110,11 @@ public class ResponseManager : MonoBehaviour
     /* Add the list of responses (similar phrases to 'yes') */
     private void addAffirmations(int id)
     {
+        buildAffirmations();
         foreach (string g in affirmation)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
-            if (keywordDictionary.ContainsKey(g)) return; //no duplicates
+            if (keywordDictionary.ContainsKey(g)) continue; //no duplicates
             keywordDictionary.Add(g, () => { });
         }
     }
@@ -123,10 +122,11 @@ public class ResponseManager : MonoBehaviour
     /* Add the list of responses (similar phrases to 'no') */
     private void addNegatives(int id)
     {
+        buildNegations();
         foreach (string g in negation)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
-            if (keywordDictionary.ContainsKey(g)) return; //no duplicates
+            if (keywordDictionary.ContainsKey(g)) continue; //no duplicates
             keywordDictionary.Add(g, () => { });
         }
     }
@@ -134,10 +134,11 @@ public class ResponseManager : MonoBehaviour
     /* Add the list of responses (similar phrases to 'i don't know') */
     private void addUnsures(int id)
     {
+        buildUnsures();
         foreach (string g in unsure)
         {
             gMapper.Add(new GrammarMapper() { item = g, jumpTo = this.response.jumpIDs[id] });
-            if (keywordDictionary.ContainsKey(g)) return; //no duplicates
+            if (keywordDictionary.ContainsKey(g)) continue; //no duplicates
             keywordDictionary.Add(g, () => { });
         }
     }
@@ -166,16 +167,17 @@ public class ResponseManager : MonoBehaviour
                 if (gMapper[i].Equals(new GrammarMapper { item = args.text, jumpTo = null }))
                 {
                     Debug.Log(TAG + "Response jump to: " + gMapper[i].jumpTo.GetComponent<EventIM>().name + " " + gMapper[i].jumpTo.GetComponent<EventIM>().IDescription);
-                    //interactionManager.eventIndex = gMapper[i].jumpTo;
                     nextEvent = gMapper[i].jumpTo;
-                    response.finish();
                     response.nextEvent = gMapper[i].jumpTo;
-                    keywordRecognizer.Stop();
-                    keywordRecognizer.Dispose();
-                    agentStatus.stopListening();
-                    keywordDictionary.Clear();
-                    gMapper.Clear();
-                    this.stopKeywordRecognizer();
+                    response.finish(); //mark the event done
+
+                    if (isRepeatResponse(gMapper[i].item))
+                    {
+                        save(gMapper[i].jumpTo);
+                        prevEventToRepeat.GetComponent<EventIM>().wantToReplay(); //replay the dialog before this response
+                        Invoke("repeat", 0.1f);
+                    }
+                    stopKeywordRecognizer();
                     keywordAction.Invoke();
                 }
             }
@@ -195,7 +197,9 @@ public class ResponseManager : MonoBehaviour
         PhraseRecognitionSystem.Shutdown();
         if (keywordRecognizer != null)
         {
-            response.finish();
+            keywordDictionary.Clear();
+            gMapper.Clear();
+            agentStatus.stopListening();
             keywordRecognizer.Stop();
             keywordRecognizer.Dispose();
         }
@@ -207,6 +211,28 @@ public class ResponseManager : MonoBehaviour
         if (keywordRecognizer != null)
             return keywordRecognizer.IsRunning;
         return false;
+    }
+
+    /* Checks if what was recognized was a repeat request */
+    private bool isRepeatResponse(String g)
+    {
+        foreach (String r in repetition)
+            if (g == r)
+                return true;
+        return false;
+    }
+
+    /* Save the previous event to restart: restart event */
+    private void save(GameObject e)
+    {
+        prevEventToRepeat = e.GetComponent<EventIM>();
+        Debug.Log(TAG + "woof");
+    }
+
+    private void repeat()
+    {
+        prevEventToRepeat.nextEvent.GetComponent<EventIM>().wantToReplay();
+        //prevEventToRepeat.GetComponent<EventIM>().nextEvent.GetComponent<EventIM>().wantToReplay(); //restart this 
     }
 
     /* *********** The list of possibile user-responses for 'repeats'. *********** */
@@ -224,11 +250,16 @@ public class ResponseManager : MonoBehaviour
         repetition.Add("Can you repeat that");
         repetition.Add("Can you repeat what you said");
         repetition.Add("Can you repeat what you just said");
+        repetition.Add("Can you repeat the question");
+        repetition.Add("Can you say that again");
+        repetition.Add("Can you say it again");
         repetition.Add("Repeat it");
         repetition.Add("Repeat that");
         repetition.Add("Repeat yourself");
+        repetition.Add("Repeat please");
         repetition.Add("Repeat what you said");
         repetition.Add("Repeat what you just said");
+        repetition.Add("Repeat the question");
     }
 
     /* *********** The list of possibile user-responses for 'yes'. *********** */
@@ -242,20 +273,24 @@ public class ResponseManager : MonoBehaviour
         affirmation.Add("sounds good");
         affirmation.Add("that sounds good");
         affirmation.Add("uh huh");
+        affirmation.Add("cool");
+        affirmation.Add("alright");
     }
 
     /* *********** The list of possibile user-responses for 'no'. *********** */
     private void buildNegations()
     {
+        negation.Add("nay");
         negation.Add("nah");
         negation.Add("nope");
         negation.Add("no way");
         negation.Add("no, thank you");
         negation.Add("no, thanks");
+        negation.Add("i don't think so");
     }
 
     /* *********** The list of possibile user-responses for 'i don't know'. *********** */
-    private void buildUnsure()
+    private void buildUnsures()
     {
         unsure.Add("i'm unsure");
         unsure.Add("i'm not sure");

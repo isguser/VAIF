@@ -8,27 +8,19 @@ public class ConversationIM : MonoBehaviour
 
     public enum ConversationType
     {
-        InteractionConversation,
-        OtherConversation
+        Conversation
     }
     
     public void AddConversation(string type) {
         switch (type) {
-            case "InteractionConversation":
+            case "Conversation":
                 GameObject n_conversation = new GameObject();
-                n_conversation.name = "InteractionConversation";
+                n_conversation.name = "Conversation";
                 n_conversation.AddComponent<Conversation>();
                 n_conversation.AddComponent<JumpManager>();
                 n_conversation.AddComponent<EventIM>();
+                conversation.Add(n_conversation.GetComponent<Conversation>());
                 SetParent(n_conversation);
-                break;
-            case "OtherConversation":
-                GameObject abconversation = new GameObject();
-                abconversation.name = "OtherConversation";
-                abconversation.AddComponent<Conversation>();
-                abconversation.AddComponent<JumpManager>();
-                abconversation.AddComponent<EventIM>();
-                SetParent(abconversation);
                 break;
         }
     }

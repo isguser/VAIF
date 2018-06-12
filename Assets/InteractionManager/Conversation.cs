@@ -18,7 +18,7 @@ public class Conversation : MonoBehaviour
     public bool finished = false;
     private bool leftConv = false;
     private EventIM currEvent;
-    public EventIM prevEvent;
+    private EventIM prevEvent;
     private EventIM nextEvent;
     private AgentStatusManager agent; //agent for the wantInRange/wantLookedAt
 
@@ -35,8 +35,16 @@ public class Conversation : MonoBehaviour
         TAG += name + " ";
 
         //load the events
+        int i = 0;
         foreach (Transform child in transform)
-            events.Add(child.GetComponentInChildren<EventIM>());
+        {
+            EventIM e = child.GetComponentInChildren<EventIM>();
+            if ( e.nextEvent!=null && e.nextEvent.name == "Response" ) //response doesn't have next until completed
+                e.nextEvent.GetComponent<Response>().setDialog(e.gameObject);
+            events.Add(e);
+            i++;
+        }
+        //todo fix the dialog for the response
         jm = gameObject.GetComponent<JumpManager>();
         jm.load(events);
 
@@ -47,6 +55,9 @@ public class Conversation : MonoBehaviour
 
     /* Called on every frame */
     private void Update() {
+        if ( finished )
+            return;
+
         //this conversation is active
         if ( currEvent.hasStarted() )
             started = true;
@@ -200,7 +211,7 @@ public class Conversation : MonoBehaviour
 
     /* ********** Accessors: Event Matches ********** */
     private void setWants() {
-        if ( currEvent==null || currEvent.isLastEvent )
+        if ( currEvent==null || (currEvent.isLastEvent && currEvent.isDone()) )
         {
             finished = true;
             Debug.Log(TAG + "ended this conversation.");

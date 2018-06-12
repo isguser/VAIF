@@ -19,5 +19,23 @@ public class Response : EventIM
     public GameObject missrecognitions;
     [Tooltip("Optional. Jump point after a specified set of missrecogntions.")]
     public string baseCaseJumpID;
+
+
+    private void Update()
+    {
+        
+    }
+
+    private GameObject dialog; //the dialog before this response (for repetitionc cases)
     //protected EventType eventType = EventType.Response;
+
+    public void setDialog(GameObject d)
+    {
+        dialog = d;
+    }
+
+    public GameObject getDialog()
+    {
+        return dialog;
+    }
 }

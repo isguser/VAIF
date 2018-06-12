@@ -61,7 +61,7 @@ public class AnimationManager : MonoBehaviour
         {
             //Debug.Log(TAG + " Playing animation: " + animate.animation);
             int index = findAnimation(animate.animation);
-            if (looping)
+            if (animate.loop)
             {
                 animator.SetInteger("pathIndex", index);
                 startAnimation = false;
@@ -69,7 +69,7 @@ public class AnimationManager : MonoBehaviour
                 Invoke("ReplayAnimation", animationLength);
             }
 
-            if (!looping)
+            if (!animate.loop)
             {
                 animator.SetInteger("pathIndex", index);
                 startAnimation = false;
