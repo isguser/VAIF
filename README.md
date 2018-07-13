@@ -35,7 +35,7 @@ This previous version tracks when EventIM type instances (Response, Dialog, Anim
 # Required: Install Unity (version 2017.1 or later)
 1. Install Unity 2017.1 or later at this page: https://unity3d.com/get-unity/download
 2. Visit the VAIF package from the GitHub repository (available at https://github.com/isguser/VAIF).
-3. Download the VAIF package as a ZIP folder. (see instructions on page 5-6)
+3. Download the VAIF package as a ZIP folder. <br/>
 Tutorial Video: https://youtu.be/vQVJNQF6blQ
 
 # Downloading the GitHub Repository
@@ -43,7 +43,7 @@ Tutorial Video: https://youtu.be/vQVJNQF6blQ
 2. In the searchbar at GitHub.com, search for VAIF.
 3. Click on isguser/VAIF
 4. Click Clone or Download (green) button.
-5. Download as a ZIP or clone the project if you want to share your work!
+5. Download as a ZIP or clone the project if you want to share your work! <br/>
 Tutorial Video: https://youtu.be/PBTecJiWUFU
 
 # The Example Scene
@@ -66,7 +66,7 @@ A timeline consists of one or more conversations and represent the sequence of e
 	6. Wait Manager - Script
 	7. Wildcard Manager - Script
 	8. Memory Check Manager - Script
-5. Now that you’ve created a Timeline, you can add Conversations to it.
+5. Now that you’ve created a Timeline, you can add Conversations to it. <br/>
 Tutorial Video: https://youtu.be/14CE7vWCBog
 
 ## Create a Conversation
@@ -75,7 +75,7 @@ You need to create a Conversation in order to add Events to play.
 2. In the Conversation IM (Script) component, click on the Add Conversation button. This will add the conversation and the appropriate scripts needed for it. The conversation will be added to the hierarchy of Timeline.
 		_Developers are working on a feature of different types of Conversations._
 3. Click on the Conversation GameObject. Create a new Tag in the Conversation GameObject and call it the same name as you chose in Step 2 (in our example, ConversationA). Attach this Tag to the Conversation GameObject you created (see the hierarchy on the left).
-4. Now that you’ve created a Conversation, you can add Events to it.
+4. Now that you’ve created a Conversation, you can add Events to it. <br/>
 Tutorial Video: https://youtu.be/rHPDXOi37Uo
 
 ## Types of Events
@@ -88,7 +88,7 @@ Before adding Events to a Conversation, scene designers must understand the diff
 	* Wait
 * __Specific Events__ - These events require different “Next Event” specifications in order to play in the Timeline. These are helpful for branching out inside the interaction that are conditional to user’s responses:
 	* Response
-	* Wildcard
+	* Wildcard <br/>
 Tutorial Video: https://youtu.be/n6UcQq88gk4
 
 ## Adding General Events to a Conversation
@@ -102,7 +102,7 @@ You need to create a Conversation in order to run Events.
 	1. Next Event,
 	2. Agent,
 	3. Want In Range, and
-	4. Want Looked At.
+	4. Want Looked At. <br/>
 Tutorial Video: https://youtu.be/NRj5FynCpLs
 
 ### Editing the Fields and Settings for Events
@@ -130,7 +130,7 @@ An event’s “Want In Range” is a required setting. This setting, like the W
 An event’s Want Looked At is a required setting. This setting, like the Want In Range, has three possibilities that you must choose from as a condition to starting this event (in combination with Want In Range):
 1. TRUE (the user must look at the agent referenced in Agent),
 2. FALSE (the user must not look at the agent referenced in Agent), or
-3. DONTCARE (the event will play regardless of the user’s gaze direction).
+3. DONTCARE (the event will play regardless of the user’s gaze direction).<br/>
 Tutorial Video: https://youtu.be/VkH8iyRZmsY
 
 ### Exceptions: Specific Events
@@ -165,7 +165,7 @@ This event does not fill the “Next Event” field until run time. The followin
 5. Misrecognitions
 		_Developers are working on this feature._
 6. Base Case Jump ID
-		_Developers are working on this feature._
+		_Developers are working on this feature._ <br/>
 Tutorial Video: https://youtu.be/P-UZLwPy8Ps
 
 #### Wildcard Events
@@ -178,7 +178,7 @@ The settings for a “Wildcard” event are unique. The settings for the followi
 This event does fill the “Next Event” field. The following fields require additional settings:
 1. Timeout - The time (in seconds) to wait for an utterance by the user before jumping to the “Next Event”.
 2. Annotation
-		_Developers are working on this feature._
+		_Developers are working on this feature._ <br/>
 Tutorial Video: https://youtu.be/0PoUe0W9IAk
 
 ## Creating Your Agent
