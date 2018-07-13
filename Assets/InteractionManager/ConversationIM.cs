@@ -4,7 +4,7 @@ using UnityEngine;
 public class ConversationIM : MonoBehaviour
 {
     [Tooltip("Mandatory. Drag the Conversations to this list that you want to run.")]
-    public List<Conversation> conversation;
+    public List<Conversation> conversation = new List<Conversation>();
 
     public enum ConversationType
     {
