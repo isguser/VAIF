@@ -13,6 +13,8 @@ Responses: handle specific responses (recognition by keyword phrases)
 Multi-Agent interaction: navigating between Conversations to interact with various agent(s). A user can leave a conversation, and return to it to replay the previous event.
 ### Soon-To-Come Features
 GazeManager: control agent eye-gaze and head movement -- requires blendshape (facial expressions)
+MemoryManager: save and use events with each agent/user combination
+GestureManager: recognize gestures from users during interaction
 ### Future Work
 Network Manager: add multiplayer support
 EmotionCheckManager: based on memory (state of mind) -- requires blendshape (facial expressions)
@@ -35,22 +37,27 @@ This previous version tracks when EventIM type instances (Response, Dialog, Anim
 # Required: Install Unity (version 2017.1 or later)
 1. Install Unity 2017.1 or later at this page: https://unity3d.com/get-unity/download
 2. Visit the VAIF package from the GitHub repository (available at https://github.com/isguser/VAIF).
-3. Download the VAIF package as a ZIP folder. <br/>
+3. Download the VAIF Unity Package. <br/>
 Tutorial Video: https://youtu.be/vQVJNQF6blQ
 
-# Downloading the GitHub Repository
+# Downloading the GitHub Repository to your Project
 1. Visit github.com
 2. In the searchbar at GitHub.com, search for VAIF.
 3. Click on isguser/VAIF
-4. Click Clone or Download (green) button.
-5. Download as a ZIP or clone the project if you want to share your work! <br/>
+4. Click the VAIF.unitypackage file in the repository.
+5. Click the Download option and the wait for the file to finish downloading to your computer.
+6. In Unity, create a new Unity Project. You can also import VAIF to a saved Unity project.
+7. Select “Assets” > “Import Package” > “Custom Package”
+8. Navigate to the directory where you downloaded the VAIF Unity Package, and select the VAIF.unitypackage file.
+9. Click “Open” and wait for Unity to unpack all the materials.
 Tutorial Video: https://youtu.be/PBTecJiWUFU
 
 # The Example Scene
 Included in the downloadable package on Unity is an example scene in Unity called VAIF. This package contains an example of each of the types of events to create. You may have to convert this project to a different version of Unity, since it is set for Unity 2017.3.1f1.
-1. Extract the zip folder.
-2. Open Unity and click Open. Navigate to the directory where you extracted the project folder.
-3. Look at the example of two agents and an example of each of type of Event.
+1. Download the entire GitHub repository as a ZIP folder.
+2. Extract the zip folder.
+3. Open Unity and click Open. Navigate to the directory where you extracted the project folder.
+4. Look at the example of two agents and an example of each of type of Event.
 
 # Create a Timeline
 A timeline consists of one or more conversations and represent the sequence of events in your scene and when they will be played. 
