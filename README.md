@@ -193,19 +193,19 @@ Tutorial Video: https://youtu.be/0PoUe0W9IAk
 Your Agent will be composed of several managers. Depending on the goal of your application you may want to add all managers, or omit some managers depending on which features you would like to include.
 1. Agent Status Manager
 This keeps track of what the agent is currently doing. Below are the states and when they are marked true:
-* _Speaking_ - The agent is playing a dialog.
-* _Listening_ - The agent is listening to the user
-* _Waiting_ - The agent is waiting until the next event
-* _In Range_ - The user is close enough to the Agent
-* _Moving_ - The agent is currently moving towards a given target location
-* _Looked At_ - The agent is being looked at by the user
+	* _Speaking_ - The agent is playing a dialog.
+	* _Listening_ - The agent is listening to the user
+	* _Waiting_ - The agent is waiting until the next event
+	* _In Range_ - The user is close enough to the Agent
+	* _Moving_ - The agent is currently moving towards a given target location
+	* _Looked At_ - The agent is being looked at by the user
 2. Move Manager
 Dictates to the agent where to move next and calculates which animation to play with. 
 The required scripts and components are: 
-* _Third Person Character_ - Script
-* _Nav Mesh Agent_ - Script
-* \_agent\_animation\_WLocoMotion - Animator 
-	* Located in Resources > \_Animations
+	* _Third Person Character_ - Script
+	* _Nav Mesh Agent_ - Script
+	* \_agent\_animation\_WLocoMotion - Animator 
+		* Located in Resources > \_Animations
 3. Memory Manager (Future Implementation)
 Develops a memory database for each user, keeping track of the agent and events in an interaction.
 4. Emote Manager (Future Implementation)
