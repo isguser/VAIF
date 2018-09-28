@@ -56,8 +56,6 @@ See the Quick Help Guide for step-by-step guidance for each of the following ste
 Tutorial Video: https://youtu.be/vQVJNQF6blQ
 ### Downloading the GitHub Repository to your Project
 Tutorial Video: https://youtu.be/PBTecJiWUFU
-### The Example Scene
-Included in the downloadable package on Unity is an example scene in Unity called ExampleScene. This Unity scene contains an example of each of the types of events to create. You may have to convert this project to a different version of Unity, since it is set for Unity 2017.3.1f1.
 ### Create a Timeline
 A timeline consists of one or more conversations and represent the sequence of events in your scene and when they will be played. 
 Tutorial Video: https://youtu.be/14CE7vWCBog
@@ -135,3 +133,6 @@ Two Agents are included in the VAIF asset. The 3D object files (.fbx) of these a
 #### Add the Managers
 Your Agent will be composed of several managers. Depending on the goal of your application you may want to add all managers, or omit some managers depending on which features you would like to include. See Section 7.2 Adding the Managers of the Quick Help Guide.
 Tutorial Video: _to come soon_
+
+## The ExampleScene
+Included in the downloadable package on Unity is an example scene in Unity called ExampleScene. This Unity scene contains an example of the different types of events to create. You may have to convert this project to a different version of Unity, since it is set for Unity 2017.3.1f1.
