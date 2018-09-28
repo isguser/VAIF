@@ -58,9 +58,12 @@ Tutorial Video: https://youtu.be/vQVJNQF6blQ
 Tutorial Video: https://youtu.be/PBTecJiWUFU
 ### Create a Timeline
 A timeline consists of one or more conversations and represent the sequence of events in your scene and when they will be played. 
+Go to the Prefabs folder and drag Timeline Prefab into the hierchy
 Tutorial Video: https://youtu.be/14CE7vWCBog
 ### Create a Conversation
 You need to create a Conversation in order to add Events to play. Conversations are groups of events where players (or users) will interact with ECAs or agents.
+Go to the Prefabs folder and drag Conversation_ Prefab into Timeline to make it a child of Timeline
+Change the name of the object to reflect the mission of your conversation. For example, Conversation_ will be renamed to Conversation_AgentB to reflect a conversation with AgentB.
 Tutorial Video: https://youtu.be/rHPDXOi37Uo
 ### Types of Events
 Before adding Events to a Conversation, scene designers must understand the different types of Events. Each list contains different requirements in order to run.
@@ -131,7 +134,17 @@ Tutorial Video: https://youtu.be/0PoUe0W9IAk
 #### Import the Agent
 Two Agents are included in the VAIF asset. The 3D object files (.fbx) of these agents can be found in: Assets > Resources > _Agent > Laura.fbx or Taema.fbx. To customize any of the agents, you can modify the materials of the model to change the agent's appearance in hair or clothes.
 #### Add the Managers
-Your Agent will be composed of several managers. Depending on the goal of your application you may want to add all managers, or omit some managers depending on which features you would like to include. See Section 7.2 Adding the Managers of the Quick Help Guide.
+Your Agent will be composed of several managers. Depending on the goal of your application you may want to add all managers, or omit some managers depending on which features you would like to include. 
+Go to Interaction Manager > AGENT_PARENT_Scripts
+Add all the files there to the parent of agent
+
+Go to the Quick Help Guide Section 7.1.10 and continue until 7.2.
+
+Go to Interaction Manager > AGENT_FACE_Scripts
+Add all the files to the face of agent
+
+Go to the Quick Help Guide Section 7.2 to make changes to the agent face scripts.
+
 Tutorial Video: _to come soon_
 
 ## The ExampleScene
