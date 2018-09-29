@@ -2,8 +2,11 @@
 
 public class EventIM : MonoBehaviour
 {
-    [Tooltip("Required. The nextEvent is the nextEvent in the Timeline to be played after this event. It is also" +
-        "used in timeouts and parameters as jumps from other events.")]
+    [Tooltip("Required. The nextEvent is the nextEvent in the Timeline to be played after this event. It is also " +
+        "used in timeouts and parameters as jumps from other events." + 
+        "\nEXCEPTIONS:" +
+        "\nResponse events MUST leave this field blank." +
+        "\nIf this event is a lastEvent, leave this field blank.")]
     public GameObject nextEvent;
     [Tooltip("Optional. The IDescription is how you can describe your events with a simple description ID. EX: Dialog1")]
     public string IDescription;
@@ -14,9 +17,10 @@ public class EventIM : MonoBehaviour
     public EventSetting wantLookedAt;
     [Tooltip("Mandatory. Mark this event as the last in the Conversation.")]
     public bool isLastEvent;
-    public enum EventSetting {
-        TRUE,
+    public enum EventSetting
+    {
         DONTCARE, //can be T/F
+        TRUE,
         FALSE
     }
     protected EventSetting eventSetting;
