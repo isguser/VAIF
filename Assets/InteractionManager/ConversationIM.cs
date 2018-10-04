@@ -10,7 +10,13 @@ public class ConversationIM : MonoBehaviour
     {
         Conversation
     }
-    
+
+    public void Start() {
+        Component[] cmpt = gameObject.GetComponentsInChildren<Conversation>();
+        foreach (Conversation c in cmpt)
+            conversation.Add(c);
+    }
+
     public void AddConversation(string type) {
         switch (type) {
             case "Conversation":
