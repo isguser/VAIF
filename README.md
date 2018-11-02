@@ -59,7 +59,7 @@ See the Quick Help Guide for step-by-step guidance for each of the following ste
 You must install Unity 2017.1 or later.
 ### Downoading and Importing VAIF to your Project (Sections 3 and 4, respectively)
 Tutorial Video: https://youtu.be/vQVJNQF6blQ <br/>
-Tutorial Video: https://youtu.be/PBTecJiWUFU
+Tutorial Video: https://youtu.be/zfeSKOgf1Aw
 ### Create a Timeline (Section 6)
 A timeline consists of one or more conversations and represent the sequence of events in your scene and when they will be played. <br/>
 In Assets > Resources > \_Prefabs Go to the Prefabs folder and drag Timeline Prefab into the hierarchchy. <br/>
