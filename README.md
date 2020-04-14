@@ -12,6 +12,7 @@ An Embodied Conversational Agent (ECA) is a virtual character who is able to mim
 2. Multi-Agent interaction: navigating between Conversations to interact with various agent(s). A user can leave a conversation, and return to it to replay the previous event.
 3. Wildcards: handle general verbal inputs (no need for recognition)
 4. Responses: handle specific responses (recognition by keyword phrases)
+5. Text-to-Speech support: integrated with the [RT Voice Pro](https://assetstore.unity.com/packages/tools/audio/rt-voice-pro-41068) asset on the Unity Asset Store.
 ### Soon-to-Come Features
 1. GazeManager: control agent eye-gaze and head movement -- requires blendshape (facial expressions)
 2. MemoryManager: save and use events with each agent/user combination
@@ -21,7 +22,10 @@ An Embodied Conversational Agent (ECA) is a virtual character who is able to mim
 2. EmotionCheckManager: based on memory (state of mind) -- requires blendshape (facial expressions)
 
 ## History of Releases
-### Current Version: VAIF 3.2
+
+### Current Version: VAIF 4.0
+VAIF now supports TTS -- purchase required.
+### VAIF 3.2
 Improved usability and organization
 ### VAIF 3.1
 Refactored Conversation code to working order.
@@ -35,24 +39,16 @@ Added Conversations. Needs major debugging.
 This previous version tracks when EventIM type instances (Response, Dialog, Animation, etc.) are completed. No more running through a list of events!
 
 # What the Unity Project Directory Looks Like (with VAIF imported)
-The parent directory of the Unity Project is generally organized into several folders:
-* Assets
-	* \_scripts (where you can add custom C# scripts for your game)
-	* \_steamVR (which is part of the SteamVR asset library)
-	* Editor (which contains Unity GUI scripts)
-	* InteractionManager (which contains the scripts of the VAIF system)
-	* Oculus (which contains required prefabs and components for OVRLipSync)
-	* OVRLipSync (which is part of the OVR asset library)
-	* Resources (which is where you will organize your Agents, Animations, Dialogs, Prefabs, and Scenes)
-	* Runtime (which you can ignore)
-	* Utilities (which you can also ignore)
-	* VRTK (which contains the VR Toolkit asset library)
-* Library
-* ProjectSettings
-* UnityPackageManager <br/>
-The Library, ProjectSettings, and UnityPackageManager all contain files needed for Unity, they are generally unmodified by the average user.
+The parent directory of the VAIF asset is organized into several folders:
+* Assets/VAIF
+	* _lipsync (which contains the OVR lipsync scripts and prefabs needed for phoneme synchronization with speech)
+	* Editor (which contains the Unity GUI scripts)
+	* Prefabs (which contains nicely packaged GameObjects (like Agents) that you can use for quicker scene implementations)
+	* Resources (which is where we include Agents, Animations, Dialogs, and example Scenes for you to use)
+	* Scripts (which contains the many scripts which control the multiagent interactive scenes)
 
-# Included in VAIF Package
+# Included in the VAIF Package
+
 ## The Quick Help Guide and Links to Tutorial Videos
 See the Quick Help Guide for step-by-step guidance for each of the following steps to using VAIF.
 ### Required: Install Unity (version 2017.1 or later; Section 2)
@@ -62,11 +58,11 @@ Tutorial Video: https://youtu.be/vQVJNQF6blQ <br/>
 Tutorial Video: https://youtu.be/zfeSKOgf1Aw
 ### Create a Timeline (Section 6)
 A timeline consists of one or more conversations and represent the sequence of events in your scene and when they will be played. <br/>
-In Assets > Resources > \_Prefabs Go to the Prefabs folder and drag Timeline Prefab into the hierarchchy. <br/>
+Go to the Prefabs folder (Assets > VAIF > Prefabs) and drag the Timeline prefab into the hierarchy. <br/>
 Tutorial Video: https://youtu.be/14CE7vWCBog
 ### Create a Conversation (Section 6.1)
 You need to create a Conversation in order to add Events to play. Conversations are groups of events where players (or users) will interact with ECAs or agents. <br/>
-Change the name of the object to reflect the mission of your conversation. For example, Conversation will be renamed to Conversation_AgentB to reflect a conversation with AgentB. <br/>
+Change the name of the object to reflect the mission of your conversation. For example, you can rename Conversation to Conversation_AgentB to reflect a conversation with AgentB. <br/>
 Tutorial Video: https://youtu.be/rHPDXOi37Uo
 ### Types of Events (Section 6.2)
 Before adding Events to a Conversation, scene designers must understand the different types of Events. Each list contains different requirements in order to run.
@@ -133,11 +129,15 @@ This event does fill the “Next Event” field. The following fields require ad
 		_Developers are working on this feature._ <br/>
 Tutorial Video: https://youtu.be/0PoUe0W9IAk
 ### How to Create Agents (Section 7 Creating Your Agents)
+
 #### Import the Agent
 Two Agents are included in the VAIF asset. The 3D object files (.fbx) of these agents can be found in: Assets > Resources > _Agent > Laura.fbx or Taema.fbx. To customize any of the agents, you can modify the materials of the model to change the agent's appearance in hair or clothes.
 #### Add the Managers
+*We strongly recommend scene designers to utilize prefabs as this step can take several hours.*<br/>
 Your Agent will be composed of several managers. Depending on the goal of your application you may want to add all managers, or omit some managers depending on which features you would like to include. <br/>
 Tutorial Video: _to come soon_
 
 ## The ExampleScene
-Included in the downloadable package on Unity is an example scene in Unity called ExampleScene. This Unity scene contains an example of the different types of events to create. You may have to convert this project to a different version of Unity, since it is set for Unity 2017.3.1f1.
+Included in the downloadable package are two example scenes:
+* `ExampleScene` is an example scene that contains an example of the different types of events designers can create in VAIF. You may have to convert this project to a different version of Unity, since it is set for Unity 2017.3.1f1
+* `TTS Demo` is an example scene that shows a small interaction with a single agent (Laura). This scene was developed using Unity 2019.3.0f6 and might also need to be converted. To use the TTS tool, you must purchase the [RT Voice Pro](https://assetstore.unity.com/packages/tools/audio/rt-voice-pro-41068) asset on the Unity Asset Store.
